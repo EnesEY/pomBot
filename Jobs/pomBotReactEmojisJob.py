@@ -25,15 +25,14 @@ class PomBotReactEmojisJob():
     def _cycle(self):
         print('start cycle for react job')
         while not self.stop:
-            now = datetime.datetime.now()
-            if now.minute == self.pomDoneMin:
+            if datetime.datetime.now().minute == self.pomDoneMin:
                 time.sleep(1)
                 id = self.pomReceiveFunction()
                 self.pomReactFunction(id)
                 time.sleep((self.pomBreakTimeInMin*60) - (datetime.datetime.now().second))
-                self.pomStartMin = now.minute
+                self.pomStartMin = datetime.datetime.now().minute
                 self.pomDoneMin = 999
-            if now.minute == self.pomStartMin:
+            if datetime.datetime.now().minute == self.pomStartMin:
                 time.sleep(1)
                 id = self.pomReceiveFunction()
                 self.pomReactFunction(id)
