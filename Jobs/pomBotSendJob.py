@@ -26,13 +26,12 @@ class PomBotSendJob:
     def _cycle(self):
         print('start cycle for send job')
         while not self.stop:
-            now = datetime.datetime.now()
-            if now.minute == self.pomDoneMin:
+            if datetime.datetime.now().minute == self.pomDoneMin:
                 self.pomEndFunction()
                 time.sleep((self.pomBreakTimeInMin*60) - (datetime.datetime.now().second))
-                self.pomStartMin = now.minute
+                self.pomStartMin = datetime.datetime.now().minute
                 self.pomDoneMin = 999
-            if now.minute == self.pomStartMin:
+            if datetime.datetime.now().minute == self.pomStartMin:
                 self.pomStartFunction()
                 time.sleep((self.pomDurationInMin*60) - (datetime.datetime.now().second))
                 self.pomEndFunction()
