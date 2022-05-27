@@ -1,20 +1,13 @@
 from Jobs.pomBotReactEmojisJob import PomBotReactEmojisJob
 from Jobs.pomBotSendJob import PomBotSendJob
-from pomBotSendMessage import PomBotSend
-from pomBotReceiveMessage import PomBotReceive
-from pomBotReactEmojis import PomBotReactEmojis
-from Config.pom_config import PomConfig
+from pom_config import PomConfigInterface
 
+pomStartMin = 14
+pomEndMin = 25
+myConfig = PomConfigInterface.get_mowgli_25_5_sparkle_config()
+pomBotSendJob = PomBotSendJob(myConfig, pomStartMin, pomEndMin)
+pomBotReactJob = PomBotReactEmojisJob(myConfig, pomStartMin, pomEndMin)
 try:
-    pomDuratingInMin = 25
-    pomBreakInMin = 5
-    pomStartMin = 30
-    myConfig = PomConfig.
-    pomBotSend = PomBotSend()
-    pomBotReceive = PomBotReceive()
-    pomBotReact = PomBotReactEmojis()
-    pomBotSendJob = PomBotSendJob(pomBotSend.startEmojiToMogli, pomBotSend.doneEmojiToMogli,pomDuratingInMin,pomBreakInMin, pomStartMin)
-    pomBotReactJob = PomBotReactEmojisJob(pomDuratingInMin,pomBreakInMin,pomBotReceive.getLastMessageIDMogli,pomBotReact.react_with_all_mogli, pomStartMin)
     pomBotSendJob.start_cycle()
     pomBotReactJob.start_cycle()
 except Exception as e:

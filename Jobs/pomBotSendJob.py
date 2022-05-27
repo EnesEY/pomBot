@@ -1,18 +1,18 @@
 import datetime
 import time
-from typing import Callable
 import threading
 
 
 class PomBotSendJob:
-    def __init__(self, pomStartFunction: Callable, pomEndFunction: Callable, pomDurationInMin: int, pomBreakTimeInMin: int, pomStartMin: int):
+    def __init__(self, config, pomStartMin, pomDoneMin):
         self._cycle_thread: threading.Thread = None
         self.stop: bool = False
-        self.pomStartFunction = pomStartFunction
-        self.pomEndFunction = pomEndFunction
-        self.pomDurationInMin = pomDurationInMin
-        self.pomBreakTimeInMin = pomBreakTimeInMin
+        self.pomStartFunction = config.pomStartFunction
+        self.pomEndFunction = config.pomEndFunction
+        self.pomDurationInMin = config.pomDurationInMin
+        self.pomBreakTimeInMin = config.pomBreakTimeInMin
         self.pomStartMin = pomStartMin
+        self.pomDoneMin = pomDoneMin
 
     def start_cycle(self):
         self._cycle_thread = threading.Thread(target=self._cycle)
@@ -27,11 +27,17 @@ class PomBotSendJob:
         print('start cycle for send job')
         while not self.stop:
             now = datetime.datetime.now()
+            if now.minute == self.pomDoneMin:
+                self.pomEndFunction()
+                time.sleep((self.pomBreakTimeInMin*60))
+                self.pomStartMin = now.minute
             if now.minute == self.pomStartMin:
                 self.pomStartFunction()
-                time.sleep((self.pomDurationInMin*60)-(60-now.second))
+                time.sleep(1.1)
+                time.sleep((self.pomDurationInMin*60)-(now.second))
                 self.pomEndFunction()
-                time.sleep((self.pomBreakTimeInMin*60)-(60-now.second))
+                time.sleep((self.pomBreakTimeInMin*60))
                 self.pomStartMin = now.minute
+                print(f'newPomStartTime:{self.pomStartMin}')
             time.sleep(1)
 
