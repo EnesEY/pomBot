@@ -1,15 +1,26 @@
 from enum import Enum
 import config
 
-class Payloads(Enum):
+class ExtendedEnum(Enum):
+    @classmethod
+    def list(cls):
+        return list(map(lambda c: c.value, cls))
+
+class Payloads(ExtendedEnum):
     PAYLOAD_POM_START_1 = "@here pom start"
     PAYLOAD_POM_DONE_1  = "@here pom done"
     PAYLOAD_POM_START_EMOJI = "@here <a:echat_sparkles:794309945414778881> <:p_letter_p:795783313242980372> <:p_letter_o:795783310608957450> <:p_letter_m:795783310483783691>     <:p_letter_s:795783310206828548> <:p_letter_t:795783310563213363> <:p_letter_a:795783477269233724> <:p_letter_r:795783310630191104> <:p_letter_t:795783310563213363> <a:echat_sparkles:794309945414778881>"
     PAYLOAD_POM_DONE_EMOJI = "@here <a:SquirrelRolli:665618752322273280>  <:p_letter_p:795783313242980372> <:p_letter_o:795783310608957450> <:p_letter_m:795783310483783691>     <:p_letter_d:795783310365294682> <:p_letter_o:795783310608957450> <:p_letter_n:795783310315880469> <:p_letter_e:795783310583791677>  <a:SquirrelRolli:665618752322273280>"
 
-class ChannelIDs(Enum):
+class ChannelIDs(ExtendedEnum):
     CHANNEL_ID_MOWGLI_DM_GROUP = "https://discord.com/api/v9/channels/969415933779120180/messages"
     CHANNEL_ID_BOT_TEST = "https://discord.com/api/v9/channels/979459987866800168/messages"
 
-class AuthenticationTokens(Enum):
+class AuthenticationTokens(ExtendedEnum):
     AUTH_TOKEN_1 = config.token_secret
+
+class ReactEmojis(ExtendedEnum):
+    REACT_EMOJI_KAWAII_SPARKLE = "/reactions/kawaiiSparkles%3A737449279869681674/%40me?location=Message"
+    REACT_EMOJI_E_CHAT_SPARKLE = "/reactions/echat_sparkles%3A794309945414778881/%40me?location=Message"
+    REACT_EMOJI_E_CHAT_SPARKLE_1 = "/reactions/echat_sparkles~1%3A798665649504780388/%40me?location=Message"
+    REACT_EMOJI_P_SPARKLE = "/reactions/p_sparkles03%3A771538649028362310/%40me?location=Message"

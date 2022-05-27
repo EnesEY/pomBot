@@ -1,5 +1,5 @@
 import requests
-from pomBotEnums import Payloads, ChannelIDs, AuthenticationTokens
+from Enums.pomBotEnums import Payloads, ChannelIDs, AuthenticationTokens
 
 class PomBotSend:
     def __sendPomMessage(self, channelID: str, payload: str, authToken: str):
