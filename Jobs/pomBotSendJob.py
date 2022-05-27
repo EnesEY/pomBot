@@ -29,15 +29,15 @@ class PomBotSendJob:
             now = datetime.datetime.now()
             if now.minute == self.pomDoneMin:
                 self.pomEndFunction()
-                time.sleep((self.pomBreakTimeInMin*60))
+                time.sleep((self.pomBreakTimeInMin*60) - (datetime.datetime.now().second))
                 self.pomStartMin = now.minute
+                self.pomDoneMin = 999
             if now.minute == self.pomStartMin:
                 self.pomStartFunction()
-                time.sleep(1.1)
-                time.sleep((self.pomDurationInMin*60)-(now.second))
+                time.sleep((self.pomDurationInMin*60) - (datetime.datetime.now().second))
                 self.pomEndFunction()
-                time.sleep((self.pomBreakTimeInMin*60))
-                self.pomStartMin = now.minute
+                time.sleep((self.pomBreakTimeInMin*60) - (datetime.datetime.now().second))
+                self.pomStartMin = datetime.datetime.now().minute
                 print(f'newPomStartTime:{self.pomStartMin}')
             time.sleep(1)
 
