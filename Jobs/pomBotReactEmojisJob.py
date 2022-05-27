@@ -36,10 +36,10 @@ class PomBotReactEmojisJob():
                 time.sleep(1)
                 id = self.pomReceiveFunction()
                 self.pomReactFunction(id)
-                time.sleep((self.pomDurationInMin*60) - (datetime.datetime.now().second))
+                time.sleep((self.pomDurationInMin*60) - (datetime.datetime.now().second) + 1)
                 id = self.pomReceiveFunction()
                 self.pomReactFunction(id)
-                time.sleep((self.pomBreakTimeInMin*60 )- (datetime.datetime.now().second))
+                time.sleep((self.pomBreakTimeInMin*60 )- (datetime.datetime.now().second) + 1)
                 self.pomStartMin = datetime.datetime.now().minute
                 print(f'newPomStartTime:{self.pomStartMin}')
             time.sleep(1)
