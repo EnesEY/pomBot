@@ -41,9 +41,9 @@ class SendMessage:
                          Payloads.PAYLOAD_POM_DONE_EMOJI.value, token_secret)
 
     def sendStartMessageToMowgli(self):
-        self.sendMessage(ChannelIDs.CHANNEL_ID_BOT_TEST.value,
+        self.sendMessage(ChannelIDs.CHANNEL_ID_MOWGLI_DM_GROUP.value,
                          Payloads.PAYLOAD_POM_START_EMOJI.value, token_secret)
 
     def sendEndMessageToMowgli(self):
-        self.sendMessage(ChannelIDs.CHANNEL_ID_BOT_TEST.value,
+        self.sendMessage(ChannelIDs.CHANNEL_ID_MOWGLI_DM_GROUP.value,
                          Payloads.PAYLOAD_POM_DONE_EMOJI.value, token_secret)
