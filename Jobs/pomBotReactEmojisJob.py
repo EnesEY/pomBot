@@ -2,7 +2,8 @@ import datetime
 import time
 import threading
 
-class PomBotReactEmojisJob():
+
+class PomBotReactEmojisJob:
     def __init__(self, config, pomStartMin, pomDoneMin):
         self._cycle_thread: threading.Thread = None
         self.stop: bool = False
@@ -23,23 +24,29 @@ class PomBotReactEmojisJob():
         self._cycle_thread.join()
 
     def _cycle(self):
-        print('start cycle for react job')
+        print("start cycle for react job")
         while not self.stop:
             if datetime.datetime.now().minute == self.pomDoneMin:
                 time.sleep(1)
                 id = self.pomReceiveFunction()
                 self.pomReactFunction(id)
-                time.sleep((self.pomBreakTimeInMin*60) - (datetime.datetime.now().second))
+                time.sleep(
+                    (self.pomBreakTimeInMin * 60) - (datetime.datetime.now().second)
+                )
                 self.pomStartMin = datetime.datetime.now().minute
                 self.pomDoneMin = 999
             if datetime.datetime.now().minute == self.pomStartMin:
                 time.sleep(1)
                 id = self.pomReceiveFunction()
                 self.pomReactFunction(id)
-                time.sleep((self.pomDurationInMin*60) - (datetime.datetime.now().second) + 1)
+                time.sleep(
+                    (self.pomDurationInMin * 60) - (datetime.datetime.now().second) + 1
+                )
                 id = self.pomReceiveFunction()
                 self.pomReactFunction(id)
-                time.sleep((self.pomBreakTimeInMin*60 )- (datetime.datetime.now().second) + 1)
+                time.sleep(
+                    (self.pomBreakTimeInMin * 60) - (datetime.datetime.now().second) + 1
+                )
                 self.pomStartMin = datetime.datetime.now().minute
-                print(f'newPomStartTime:{self.pomStartMin}')
+                print(f"newPomStartTime:{self.pomStartMin}")
             time.sleep(1)
