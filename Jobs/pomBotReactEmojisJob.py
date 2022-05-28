@@ -8,7 +8,8 @@ class PomBotReactEmojisJob:
         self._cycle_thread: threading.Thread = None
         self.stop: bool = False
         self.pomReceiveFunction = config.pomReceiveFunction
-        self.pomReactFunction = config.pomReactFunction
+        self.pomReactFunctionStart = config.pomReactFunctionStart
+        self.pomReactFunctionEnd = config.pomReactFunctionEnd
         self.pomDurationInMin = config.pomDurationInMin
         self.pomBreakTimeInMin = config.pomBreakTimeInMin
         self.pomStartMin = pomStartMin
@@ -29,7 +30,7 @@ class PomBotReactEmojisJob:
             if datetime.datetime.now().minute == self.pomDoneMin:
                 time.sleep(1)
                 id = self.pomReceiveFunction()
-                self.pomReactFunction(id)
+                self.pomReactFunctionEnd(id)
                 time.sleep(
                     (self.pomBreakTimeInMin * 60) - (datetime.datetime.now().second)
                 )
@@ -38,12 +39,12 @@ class PomBotReactEmojisJob:
             if datetime.datetime.now().minute == self.pomStartMin:
                 time.sleep(1)
                 id = self.pomReceiveFunction()
-                self.pomReactFunction(id)
+                self.pomReactFunctionStart(id)
                 time.sleep(
                     (self.pomDurationInMin * 60) - (datetime.datetime.now().second) + 1
                 )
                 id = self.pomReceiveFunction()
-                self.pomReactFunction(id)
+                self.pomReactFunctionEnd(id)
                 time.sleep(
                     (self.pomBreakTimeInMin * 60) - (datetime.datetime.now().second) + 1
                 )

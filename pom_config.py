@@ -12,14 +12,16 @@ class PomConfig:
         pomDurationInMin: int,
         pomBreakTimeInMin: int,
         pomReceiveFunction: Callable,
-        pomReactFunction: Callable,
+        pomReactFunctionStart: Callable,
+        pomReactFunctionEnd: Callable,
     ):
         self.pomStartFunction = pomStartFunction
         self.pomEndFunction = pomEndFunction
         self.pomDurationInMin = pomDurationInMin
         self.pomBreakTimeInMin = pomBreakTimeInMin
         self.pomReceiveFunction = pomReceiveFunction
-        self.pomReactFunction = pomReactFunction
+        self.pomReactFunctionStart = pomReactFunctionStart
+        self.pomReactFunctionEnd = pomReactFunctionEnd
 
 
 class PomConfigInterface:
@@ -30,7 +32,8 @@ class PomConfigInterface:
             pomDurationInMin=25,
             pomBreakTimeInMin=5,
             pomReceiveFunction=PomBotReceive().getLastMessageIDMogli,
-            pomReactFunction=PomBotReactEmojis().react_with_all_mogli,
+            pomReactFunctionStart=PomBotReactEmojis().react_with_all_mogli,
+            pomReactFunctionEnd=PomBotReactEmojis().react_with_Numbers_mogli,
         )
         return mowgli_25_5_sparkle
 
@@ -41,7 +44,8 @@ class PomConfigInterface:
             pomDurationInMin=2,
             pomBreakTimeInMin=1,
             pomReceiveFunction=PomBotReceive().getLastMessageIDTest,
-            pomReactFunction=PomBotReactEmojis().react_with_all_Test,
+            pomReactFunctionStart=PomBotReactEmojis().react_with_all_Test,
+            pomReactFunctionEnd=PomBotReactEmojis().react_with_Numbers_Test,
         )
         return test_2_1_sparkle
 
@@ -52,6 +56,7 @@ class PomConfigInterface:
             pomDurationInMin=5,
             pomBreakTimeInMin=1,
             pomReceiveFunction=PomBotReceive().getLastMessageIDTest,
-            pomReactFunction=PomBotReactEmojis().react_with_all_Test,
+            pomReactFunctionStart=PomBotReactEmojis().react_with_all_Test,
+            pomReactFunctionEnd=PomBotReactEmojis().react_with_Numbers_Test,
         )
         return test_2_1_sparkle
