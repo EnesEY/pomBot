@@ -1,14 +1,14 @@
-from Jobs.pomBotReactEmojisJob import PomBotReactEmojisJob
-from Jobs.pomBotSendJob import PomBotSendJob
-from pom_config import PomConfigInterface
+from source.Jobs.reactEmojiJob import ReactEmojiJob
+from source.Jobs.sendMessageJob import SendMessageJob
+from Enums.PomBotEnums import ConfigEnum
 
 # set the one to the value you want and the other to 999
 pomStartMin = 999  # if you wanna start with a pom START
-pomEndMin = 33  # if you wanna start with a pom end
+pomEndMin = 8  # if you wanna start with a pom end
 
-myConfig = PomConfigInterface.get_test_2_1_sparkle_config()
-pomBotSendJob = PomBotSendJob(myConfig, pomStartMin, pomEndMin)
-pomBotReactJob = PomBotReactEmojisJob(myConfig, pomStartMin, pomEndMin)
+type = ConfigEnum.CONFIG_FOR_TEST_CHANNEL_2_1
+pomBotSendJob = SendMessageJob(type, pomStartMin, pomEndMin)
+pomBotReactJob = ReactEmojiJob(type, pomStartMin, pomEndMin)
 try:
     pomBotSendJob.start_cycle()
     pomBotReactJob.start_cycle()
