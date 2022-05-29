@@ -3,7 +3,7 @@ import requests
 import json
 from datetime import datetime
 from dateutil.parser import parse
-from Enums.PomBotEnums import ConfigEnum, ChannelIDs, Payloads
+from Enums.pomBotEnums import ConfigEnum, ChannelIDs, Payloads
 from project_secrets import token_secret
 
 

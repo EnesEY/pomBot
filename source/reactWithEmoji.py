@@ -1,5 +1,5 @@
 import requests
-from Enums.PomBotEnums import ConfigEnum, ChannelIDs, ReactEmojisSparkles, ReactEmojisNumbers
+from Enums.pomBotEnums import ConfigEnum, ChannelIDs, ReactEmojisSparkles, ReactEmojisNumbers
 from project_secrets import token_secret
 import time
 

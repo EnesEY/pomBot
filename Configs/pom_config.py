@@ -1,4 +1,4 @@
-from Enums.PomBotEnums import ConfigEnum
+from Enums.pomBotEnums import ConfigEnum
 
 
 class PomConfig:

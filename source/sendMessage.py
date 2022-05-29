@@ -1,5 +1,5 @@
 import requests
-from Enums.PomBotEnums import ConfigEnum, ChannelIDs, Payloads
+from Enums.pomBotEnums import ConfigEnum, ChannelIDs, Payloads
 from project_secrets import token_secret
 
 

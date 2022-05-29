@@ -1,7 +1,7 @@
 import datetime
 import time
 import threading
-from Enums.PomBotEnums import ConfigEnum
+from Enums.pomBotEnums import ConfigEnum
 from Configs.pom_config import PomConfig
 from ..sendMessage import SendMessage
 
