@@ -43,6 +43,7 @@ class SendMessageJob:
         time.sleep(1)
         if isStart == True:
             self.pomStartFunction()
+            time.sleep((self.pomDurationInMin * 60) - (datetime.datetime.now().second))
         elif isStart == False:
             self.pomEndFunction()
-        time.sleep((self.pomBreakTimeInMin * 60) - (datetime.datetime.now().second))
+            time.sleep((self.pomBreakTimeInMin * 60) - (datetime.datetime.now().second))

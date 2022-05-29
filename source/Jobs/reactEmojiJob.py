@@ -47,6 +47,7 @@ class ReactEmojiJob:
         id = self.pomReceiveFunction()
         if isStart == True:
             self.pomReactFunctionStart(id)
+            time.sleep((self.pomDurationInMin * 60) - (datetime.datetime.now().second))
         elif isStart == False:
             self.pomReactFunctionEnd(id)
-        time.sleep((self.pomBreakTimeInMin * 60) - (datetime.datetime.now().second))
+            time.sleep((self.pomBreakTimeInMin * 60) - (datetime.datetime.now().second))
