@@ -3,8 +3,8 @@ import time
 import threading
 from Enums.pomBotEnums import ConfigEnum
 from Configs.pom_config import PomConfig
-from ..receiveMessage import ReceiveMessage
-from ..reactWithEmoji import ReactWithEmoji
+from source.receiveMessage import ReceiveMessage
+from source.reactWithEmoji import ReactWithEmoji
 
 
 class ReactEmojiJob:

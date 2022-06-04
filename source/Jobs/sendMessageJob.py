@@ -3,7 +3,7 @@ import time
 import threading
 from Enums.pomBotEnums import ConfigEnum
 from Configs.pom_config import PomConfig
-from ..sendMessage import SendMessage
+from source.sendMessage import SendMessage
 
 
 class SendMessageJob:
