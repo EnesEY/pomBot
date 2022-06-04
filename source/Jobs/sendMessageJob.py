@@ -1,21 +1,20 @@
 import datetime
 import time
 import threading
-from Enums.pomBotEnums import ConfigEnum
-from Configs.pom_config import PomConfig
 from source.sendMessage import SendMessage
 
 
 class SendMessageJob:
-    def __init__(self, configEnum: ConfigEnum, pomStartMin, pomDoneMin):
+    def __init__(self, channel_string, pomStartMin, pomEndMin, pomDurationInMin, pomBreakTimeInMin):
         self._cycle_thread: threading.Thread = None
         self.stop: bool = False
-        self.pomStartFunction = SendMessage().getSendMessageFunction(configEnum, True)
-        self.pomEndFunction = SendMessage().getSendMessageFunction(configEnum, False)
-        self.pomDurationInMin = PomConfig(configEnum).pomDurationInMin
-        self.pomBreakTimeInMin = PomConfig(configEnum).pomBreakTimeInMin
+        self.channel_string = channel_string
+        self.pomStartFunction = SendMessage().sendStartMessage
+        self.pomEndFunction = SendMessage().sendEndMessage
+        self.pomDurationInMin = pomDurationInMin
+        self.pomBreakTimeInMin = pomBreakTimeInMin
         self.pomStartMin = pomStartMin
-        self.pomDoneMin = pomDoneMin
+        self.pomDoneMin = pomEndMin
 
     def start_cycle(self):
         self._cycle_thread = threading.Thread(target=self._cycle)
@@ -42,8 +41,8 @@ class SendMessageJob:
     def send(self, isStart: bool):
         time.sleep(1)
         if isStart == True:
-            self.pomStartFunction()
+            self.pomStartFunction(self.channel_string)
             time.sleep((self.pomDurationInMin * 60) - (datetime.datetime.now().second))
         elif isStart == False:
-            self.pomEndFunction()
+            self.pomEndFunction(self.channel_string)
             time.sleep((self.pomBreakTimeInMin * 60) - (datetime.datetime.now().second))

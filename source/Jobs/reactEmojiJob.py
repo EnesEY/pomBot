@@ -1,23 +1,22 @@
 import datetime
 import time
 import threading
-from Enums.pomBotEnums import ConfigEnum
-from Configs.pom_config import PomConfig
 from source.receiveMessage import ReceiveMessage
 from source.reactWithEmoji import ReactWithEmoji
 
 
 class ReactEmojiJob:
-    def __init__(self, configEnum: ConfigEnum, pomStartMin, pomDoneMin):
+    def __init__(self, channel_string, pomStartMin, pomEndMin, pomDurationInMin, pomBreakTimeInMin):
         self._cycle_thread: threading.Thread = None
         self.stop: bool = False
-        self.pomReceiveFunction = ReceiveMessage().getReceiveFunction(configEnum)
-        self.pomReactFunctionStart = ReactWithEmoji().getReactWithEmojiFunction(configEnum, True)
-        self.pomReactFunctionEnd = ReactWithEmoji().getReactWithEmojiFunction(configEnum, False)
-        self.pomDurationInMin = PomConfig(configEnum).pomDurationInMin
-        self.pomBreakTimeInMin = PomConfig(configEnum).pomBreakTimeInMin
+        self.channel_string = channel_string
+        self.pomReceiveFunction = ReceiveMessage().get_last_bot_message_id_in_last_150_seconds
+        self.pomReactFunctionStart = ReactWithEmoji().react_with_all_sparkles
+        self.pomReactFunctionEnd = ReactWithEmoji().react_with_all_numbers
+        self.pomDurationInMin = pomDurationInMin
+        self.pomBreakTimeInMin = pomBreakTimeInMin
         self.pomStartMin = pomStartMin
-        self.pomDoneMin = pomDoneMin
+        self.pomDoneMin = pomEndMin
 
     def start_cycle(self):
         self._cycle_thread = threading.Thread(target=self._cycle)
@@ -44,10 +43,10 @@ class ReactEmojiJob:
 
     def react(self, isStart: bool):
         time.sleep(2)
-        id = self.pomReceiveFunction()
+        id = self.pomReceiveFunction(self.channel_string)
         if isStart == True:
-            self.pomReactFunctionStart(id)
+            self.pomReactFunctionStart(id, self.channel_string)
             time.sleep((self.pomDurationInMin * 60) - (datetime.datetime.now().second))
         elif isStart == False:
-            self.pomReactFunctionEnd(id)
+            self.pomReactFunctionEnd(id, self.channel_string)
             time.sleep((self.pomBreakTimeInMin * 60) - (datetime.datetime.now().second))

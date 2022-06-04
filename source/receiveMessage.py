@@ -3,7 +3,7 @@ import requests
 import json
 from datetime import datetime
 from dateutil.parser import parse
-from Enums.pomBotEnums import ConfigEnum, ChannelIDs, Payloads
+from Enums.pomBotEnums import Payloads
 from project_secrets import token_secret
 
 
@@ -58,28 +58,9 @@ class ReceiveMessage:
         print(f'retrieved messages of bot: {botUserName} that are max. {maxSecondsOld} seconds old')
         return user_message_list
 
-    def getReceiveFunction(self, configEnum: ConfigEnum):
-        if configEnum == ConfigEnum.CONFIG_FOR_MOWGLI_CHANNEL_25_5:
-            return self.get_last_bot_message_id_in_last_150_seconds_mowgli
-        elif configEnum == ConfigEnum.CONFIG_FOR_TEST_CHANNEL_2_1:
-            return self.get_last_bot_message_id_in_last_150_seconds_test
-        elif configEnum == ConfigEnum.CONFIG_FOR_TEST_CHANNEL_5_1:
-            return self.get_last_bot_message_id_in_last_150_seconds_test
-        else:
-            print('ERROR')
-
-    def get_last_bot_message_id_in_last_150_seconds_mowgli(self):
+    def get_last_bot_message_id_in_last_150_seconds(self, channel_string):
         messageID = 0
-        channelID = ChannelIDs.CHANNEL_ID_MOWGLI_DM_GROUP.value
-        messages = self.receiveBotMessages(channelID, token_secret, 5, "EnesEY", 150)
-        for message in messages:
-            messageID = message["id"]
-        return messageID
-
-    def get_last_bot_message_id_in_last_150_seconds_test(self):
-        messageID = 0
-        channelID = ChannelIDs.CHANNEL_ID_BOT_TEST.value
-        messages = self.receiveBotMessages(channelID, token_secret, 5, "EnesEY", 150)
+        messages = self.receiveBotMessages(channel_string, token_secret, 5, "EnesEY", 150)
         for message in messages:
             messageID = message["id"]
         return messageID
