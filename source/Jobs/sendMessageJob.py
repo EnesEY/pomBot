@@ -5,7 +5,14 @@ from source.sendMessage import SendMessage
 
 
 class SendMessageJob:
-    def __init__(self, channel_string, pomStartMin, pomEndMin, pomDurationInMin, pomBreakTimeInMin):
+    def __init__(
+        self,
+        channel_string,
+        pomStartMin,
+        pomEndMin,
+        pomDurationInMin,
+        pomBreakTimeInMin,
+    ):
         self._cycle_thread: threading.Thread = None
         self.stop: bool = False
         self.channel_string = channel_string

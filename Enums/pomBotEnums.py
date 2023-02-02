@@ -15,12 +15,24 @@ class Payloads(ExtendedEnum):
 
 
 class ReactEmojisSparkles(ExtendedEnum):
-    REACT_EMOJI_KAWAII_SPARKLE = ("/reactions/kawaiiSparkles%3A737449279869681674/%40me?location=Message")
-    REACT_EMOJI_E_CHAT_SPARKLE = ("/reactions/echat_sparkles%3A794309945414778881/%40me?location=Message")
-    REACT_EMOJI_E_CHAT_SPARKLE_1 = ("/reactions/echat_sparkles~1%3A798665649504780388/%40me?location=Message")
-    REACT_EMOJI_P_SPARKLE = ("/reactions/p_sparkles03%3A771538649028362310/%40me?location=Message")
-    REACT_EMOJI_P_SPARKLE_01 = ("/reactions/p_sparkles01%3A735706323198541904/%40me?location=Message")
-    REACT_EMOJI_P_SPARKLE_04 = ("/reactions/p_sparkles04%3A771539740657844225/%40me?location=Message")
+    REACT_EMOJI_KAWAII_SPARKLE = (
+        "/reactions/kawaiiSparkles%3A737449279869681674/%40me?location=Message"
+    )
+    REACT_EMOJI_E_CHAT_SPARKLE = (
+        "/reactions/echat_sparkles%3A794309945414778881/%40me?location=Message"
+    )
+    REACT_EMOJI_E_CHAT_SPARKLE_1 = (
+        "/reactions/echat_sparkles~1%3A798665649504780388/%40me?location=Message"
+    )
+    REACT_EMOJI_P_SPARKLE = (
+        "/reactions/p_sparkles03%3A771538649028362310/%40me?location=Message"
+    )
+    REACT_EMOJI_P_SPARKLE_01 = (
+        "/reactions/p_sparkles01%3A735706323198541904/%40me?location=Message"
+    )
+    REACT_EMOJI_P_SPARKLE_04 = (
+        "/reactions/p_sparkles04%3A771539740657844225/%40me?location=Message"
+    )
 
 
 class ReactEmojisNumbers(ExtendedEnum):

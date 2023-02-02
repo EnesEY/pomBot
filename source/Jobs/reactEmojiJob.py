@@ -6,11 +6,20 @@ from source.reactWithEmoji import ReactWithEmoji
 
 
 class ReactEmojiJob:
-    def __init__(self, channel_string, pomStartMin, pomEndMin, pomDurationInMin, pomBreakTimeInMin):
+    def __init__(
+        self,
+        channel_string,
+        pomStartMin,
+        pomEndMin,
+        pomDurationInMin,
+        pomBreakTimeInMin,
+    ):
         self._cycle_thread: threading.Thread = None
         self.stop: bool = False
         self.channel_string = channel_string
-        self.pomReceiveFunction = ReceiveMessage().get_last_bot_message_id_in_last_150_seconds
+        self.pomReceiveFunction = (
+            ReceiveMessage().get_last_bot_message_id_in_last_150_seconds
+        )
         self.pomReactFunctionStart = ReactWithEmoji().react_with_all_sparkles
         self.pomReactFunctionEnd = ReactWithEmoji().react_with_all_numbers
         self.pomDurationInMin = pomDurationInMin

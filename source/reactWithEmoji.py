@@ -5,7 +5,9 @@ import time
 
 
 class ReactWithEmoji:
-    def reactWithEmoji(self, channelID: str, messageID: str, emoji: str, authToken: str):
+    def reactWithEmoji(
+        self, channelID: str, messageID: str, emoji: str, authToken: str
+    ):
         header = {"authorization": authToken}
         myString = channelID + "/" + str(messageID) + emoji
         requests.put(myString, headers=header)
