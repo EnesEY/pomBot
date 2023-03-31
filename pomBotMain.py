@@ -5,7 +5,7 @@ import utils
 if __name__ == "__main__":
     # set the one to the value you want and the other to 999
     pomStartMin = 555  # if you wanna start with a pom START
-    pomEndMin = 25  # if you wanna start with a pom end
+    pomEndMin = 25  # if you wanna start with a pom end 
 
     channel_id = 1086898659595124877
     channel_string = utils.get_channel_string(channel_id)
