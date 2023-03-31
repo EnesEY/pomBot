@@ -55,10 +55,10 @@ class ReactEmojiJob:
         time.sleep(2)
         id = self.pomReceiveFunction(self.channel_string)
         if isStart == True:
-            # self.pomReactFunctionStart(id, self.channel_string)
+            self.pomReactFunctionStart(id, self.channel_string)
             self.markMessageUnread(self.channel_string, id)
             time.sleep((self.pomDurationInMin * 60) - (datetime.datetime.now().second))
         elif isStart == False:
-            # self.pomReactFunctionEnd(id, self.channel_string)
+            self.pomReactFunctionEnd(id, self.channel_string)
             self.markMessageUnread(self.channel_string, id)
             time.sleep((self.pomBreakTimeInMin * 60) - (datetime.datetime.now().second))

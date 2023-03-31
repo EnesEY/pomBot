@@ -1,26 +1,22 @@
-from source.Jobs.reactEmojiJob import ReactEmojiJob
-from source.Jobs.sendMessageJob import SendMessageJob
-import utils
+from config.config import default_25s_pom_config, PomTimeType
+from source.pomBot import PomBot
+from project_secrets import token_secret
+
+
+def main():
+    pomBot = PomBot(
+        channel_id=1091469223009726575,
+        secret_token=token_secret,
+        pomTimeConfig=PomTimeType.POM_TIME_TYPE_DEFAULT_25,
+        config=default_25s_pom_config,
+        # only needed if pomTimeConfig=PomTimeType.POM_TIME_TYPE_CUSTOM
+        # pomStartMin=19,
+        # pomEndMin=111,
+        # pomDurationInMin=2,
+        # pomBreakTimeInMin=1,
+    )
+    pomBot.start()
+
 
 if __name__ == "__main__":
-    # set the one to the value you want and the other to 999
-    pomStartMin = 555  # if you wanna start with a pom START
-    pomEndMin = 25  # if you wanna start with a pom end 
-
-    channel_id = 1086898659595124877
-    channel_string = utils.get_channel_string(channel_id)
-
-    pomDurationInMin = 25
-    pomBreakTimeInMin = 5
-
-    pomBotSendJob = SendMessageJob(
-        channel_string, pomStartMin, pomEndMin, pomDurationInMin, pomBreakTimeInMin
-    )
-   #  pomBotReactJob = ReactEmojiJob(channel_string, pomStartMin, pomEndMin, pomDurationInMin, pomBreakTimeInMin)
-    try:
-        pomBotSendJob.start_cycle()
-       #  pomBotReactJob.start_cycle()
-    except Exception as e:
-        print("exception has occured")
-        pomBotSendJob.stop_cycle()
-       #  pomBotReactJob.stop_cycle()
+    main()
