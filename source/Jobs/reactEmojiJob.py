@@ -3,6 +3,7 @@ import time
 import threading
 from source.receiveMessage import ReceiveMessage
 from source.reactWithEmoji import ReactWithEmoji
+from source.markMessageUnread import MarkMessageUnread
 
 
 class ReactEmojiJob:
@@ -22,6 +23,7 @@ class ReactEmojiJob:
         )
         self.pomReactFunctionStart = ReactWithEmoji().react_with_all_sparkles
         self.pomReactFunctionEnd = ReactWithEmoji().react_with_all_numbers
+        self.markMessageUnread = MarkMessageUnread().markMessageUnread
         self.pomDurationInMin = pomDurationInMin
         self.pomBreakTimeInMin = pomBreakTimeInMin
         self.pomStartMin = pomStartMin
@@ -45,7 +47,6 @@ class ReactEmojiJob:
                 self.pomDoneMin = 999
             if datetime.datetime.now().minute == self.pomStartMin:
                 self.react(True)
-                self.react(False)
                 self.pomStartMin = datetime.datetime.now().minute
                 print(f"newPomStartTime:{self.pomStartMin}")
             time.sleep(1)
@@ -54,8 +55,10 @@ class ReactEmojiJob:
         time.sleep(2)
         id = self.pomReceiveFunction(self.channel_string)
         if isStart == True:
-            self.pomReactFunctionStart(id, self.channel_string)
+            # self.pomReactFunctionStart(id, self.channel_string)
+            self.markMessageUnread(self.channel_string, id)
             time.sleep((self.pomDurationInMin * 60) - (datetime.datetime.now().second))
         elif isStart == False:
-            self.pomReactFunctionEnd(id, self.channel_string)
+            # self.pomReactFunctionEnd(id, self.channel_string)
+            self.markMessageUnread(self.channel_string, id)
             time.sleep((self.pomBreakTimeInMin * 60) - (datetime.datetime.now().second))
