@@ -81,6 +81,7 @@ class PomBot:
                 self.pomEndMin,
                 self.pomDurationInMin,
                 self.pomBreakTimeInMin,
+                config
             )
             self.jobs.append(send_message_job)
         if jobs_config.reactEmojisJobActivated == True:
@@ -90,6 +91,7 @@ class PomBot:
                 self.pomEndMin,
                 self.pomDurationInMin,
                 self.pomBreakTimeInMin,
+                config
             )
             self.jobs.append(react_emoji_job)
 

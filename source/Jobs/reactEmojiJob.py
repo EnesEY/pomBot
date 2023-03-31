@@ -4,6 +4,7 @@ import threading
 from source.receiveMessage import ReceiveMessage
 from source.reactWithEmoji import ReactWithEmoji
 from source.markMessageUnread import MarkMessageUnread
+from config.config import Config
 
 
 class ReactEmojiJob:
@@ -14,6 +15,7 @@ class ReactEmojiJob:
         pomEndMin,
         pomDurationInMin,
         pomBreakTimeInMin,
+        config
     ):
         self._cycle_thread: threading.Thread = None
         self.stop: bool = False
@@ -28,6 +30,7 @@ class ReactEmojiJob:
         self.pomBreakTimeInMin = pomBreakTimeInMin
         self.pomStartMin = pomStartMin
         self.pomDoneMin = pomEndMin
+        self.config = config
 
     def start_cycle(self):
         self._cycle_thread = threading.Thread(target=self._cycle)

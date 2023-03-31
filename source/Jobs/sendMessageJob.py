@@ -2,6 +2,7 @@ import datetime
 import time
 import threading
 from source.sendMessage import SendMessage
+from config.config import Config
 
 
 class SendMessageJob:
@@ -12,6 +13,7 @@ class SendMessageJob:
         pomEndMin,
         pomDurationInMin,
         pomBreakTimeInMin,
+        config
     ):
         self._cycle_thread: threading.Thread = None
         self.stop: bool = False
@@ -22,6 +24,7 @@ class SendMessageJob:
         self.pomBreakTimeInMin = pomBreakTimeInMin
         self.pomStartMin = pomStartMin
         self.pomDoneMin = pomEndMin
+        self.config = config
 
     def start_cycle(self):
         self._cycle_thread = threading.Thread(target=self._cycle)
