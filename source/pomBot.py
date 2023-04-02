@@ -3,6 +3,7 @@ from source.sendMessage import SendMessage
 from source.reactWithEmoji import ReactWithEmoji
 from source.receiveMessage import ReceiveMessage
 from source.markMessageUnread import MarkMessageUnread
+from source.checkAfks import CheckAfks
 import datetime
 import threading
 import time
@@ -71,8 +72,7 @@ class PomBot:
                 self.pomStartMin = 111
                 self.pomEndMin = closest_minute
         else:
-            print('pom times should be set in pomBot constructor')
-
+            print("pom times should be set in pomBot constructor")
 
     def start_cycle(self):
         self._cycle_thread = threading.Thread(target=self._cycle)
@@ -87,14 +87,14 @@ class PomBot:
         print("start cycle for send job")
         while not self.stop:
             if datetime.datetime.now().minute == self.pomEndMin:
-                self._execute_start_messages()
+                self._execute_end_messages()
                 time.sleep(
                     (self.pomDurationInMin * 60) - (datetime.datetime.now().second)
                 )
                 self.pomStartMin = datetime.datetime.now().minute
                 self.pomEndMin = 999
             if datetime.datetime.now().minute == self.pomStartMin:
-                self._execute_end_messages()
+                self._execute_start_messages()
                 time.sleep(
                     (self.pomBreakTimeInMin * 60) - (datetime.datetime.now().second)
                 )
@@ -107,7 +107,9 @@ class PomBot:
                 self.channel_string, self.config.messagesConfig.pomStartMessage
             )
         time.sleep(1)
-        id = ReceiveMessage().get_message_ids_with_searched_message(self.channel_string, self.config.messagesConfig.pomStartMessage)[0]
+        id = ReceiveMessage().get_message_ids_with_searched_message(
+            self.channel_string, self.config.messagesConfig.pomStartMessage
+        )[0]
         if self.config.jobsConfig.reactEmojisJobActivated == True:
             ReactWithEmoji.react_with_emojis(
                 id,
@@ -120,13 +122,17 @@ class PomBot:
     def _execute_end_messages(self):
         if self.config.jobsConfig.sendMessagesJobActivated == True:
             SendMessage.sendMessage(
-                self.channel_string, self.config.messagesConfig.pomStartMessage
+                self.channel_string, self.config.messagesConfig.pomEndMessage
             )
         time.sleep(1)
-        id = ReceiveMessage().get_message_ids_with_searched_message(self.channel_string, self.config.messagesConfig.pomEndMessage)[0]
+        id = ReceiveMessage().get_message_ids_with_searched_message(
+            self.channel_string, self.config.messagesConfig.pomEndMessage
+        )[0]
         if self.config.jobsConfig.reactEmojisJobActivated == True:
             ReactWithEmoji.react_with_emojis(
                 id, self.channel_string, self.config.reactEmojisConfig.pomEndReactEmojis
             )
         if self.config.jobsConfig.markOwnMessageUnreadActivated == True:
             MarkMessageUnread.markMessageUnread(self.channel_string, id)
+        if self.config.jobsConfig.checkAfksJobActivated ==True:
+            CheckAfks.check_afks(self.channel_string, 7200)

@@ -4,7 +4,6 @@ import json
 from datetime import datetime
 from dateutil.parser import parse
 from project_secrets import token_secret
-from dataclasses import fields
 
 
 class ReceiveMessage:
@@ -34,8 +33,8 @@ class ReceiveMessage:
     def get_message_ids_with_searched_message(
         self,
         channelID: str,
-        searched_message:str,
-        limit: int=5,
+        searched_message: str,
+        limit: int = 5,
     ):
         messages_with_limit = self.__retrieveAllMessages(channelID, limit)
         json_data = json.loads(messages_with_limit.text)
@@ -45,13 +44,12 @@ class ReceiveMessage:
                 messages_with_searched_payload.append(data["id"])
         return messages_with_searched_payload
 
-    
     def get_message_ids_with_username(
         self,
         channelID: str,
         userName: str,
-        maxSecondsOld: int=None,
-        limit: int=5,
+        maxSecondsOld: int = None,
+        limit: int = 100,
     ):
         user_message_list = []
         messages_with_limit = self.__retrieveAllMessages(channelID, limit)
@@ -64,3 +62,11 @@ class ReceiveMessage:
                 user_message_list, maxSecondsOld
             )
         return [message["id"] for message in user_message_list]
+    
+    def get_messages_of_age(self, channelID:str, maxSecondsOld:int, limit:int=100):
+        messages_with_limit = self.__retrieveAllMessages(channelID, limit)
+        json_data = json.loads(messages_with_limit.text)
+        messages_of_age = self.__filterMessageListForAge(
+            json_data, maxSecondsOld
+        )
+        return messages_of_age

@@ -11,5 +11,4 @@ class MarkMessageUnread:
         header = {"authorization": token_secret, "Content-Type": "application/json"}
         myString = channelID + "/" + str(messageID) + "/ack"
         output = requests.post(myString, data=json_object, headers=header)
-        print(f"output: {output}")
         print(f"message {messageID} was marked unread")

@@ -26,6 +26,7 @@ class JobsConfig:
     sendMessagesJobActivated: bool
     reactEmojisJobActivated: bool
     markOwnMessageUnreadActivated: bool
+    checkAfksJobActivated: bool
 
 
 @dataclass
