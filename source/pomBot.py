@@ -1,41 +1,42 @@
-from config.config import Config, JobsConfig, PomTimeType
-from source.Jobs.reactEmojiJob import ReactEmojiJob
-from source.Jobs.sendMessageJob import SendMessageJob
-from typing import List
+from config.config import Config, PomTimeType
+from source.sendMessage import SendMessage
+from source.reactWithEmoji import ReactWithEmoji
+from source.receiveMessage import ReceiveMessage
+from source.markMessageUnread import MarkMessageUnread
 import datetime
+import threading
+import time
 
 
 class PomBot:
     channel_string: str
-    auth_token: str
     config: Config
-    jobs: List
     pomStartMin: int
     pomEndMin: int
     pomDurationInMin: int
     pomBreakTimeInMin: int
+    secret_token: str
 
     def __init__(
         self,
         channel_id: int,
-        secret_token: str,
         config: Config,
         pomTimeConfig: PomTimeType,
+        secret_token: str,
         pomStartMin=None,
         pomEndMin=None,
         pomDurationInMin=None,
         pomBreakTimeInMin=None,
     ):
+        self._cycle_thread: threading.Thread = None
         self.channel_string = self._get_channel_string(channel_id)
         self.pomStartMin = pomStartMin
         self.pomEndMin = pomEndMin
         self.pomDurationInMin = pomDurationInMin
         self.pomBreakTimeInMin = pomBreakTimeInMin
-        self.auth_token = secret_token
         self.config = config
+        self.secret_token = secret_token
         self._load_pom_times(pomTimeConfig)
-        self.jobs = []
-        self._get_project_jobs(config)
 
     def _get_channel_string(self, channel_id: int):
         channel_string_start = "https://discord.com/api/v9/channels/"
@@ -43,62 +44,89 @@ class PomBot:
         return channel_string_start + str(channel_id) + channel_string_end
 
     def _load_pom_times(self, pomTimeConfig: PomTimeType):
+        def _closest_minute_in_future(minutes):
+            now = datetime.datetime.now()
+            future_time = now + datetime.timedelta(minutes=1)
+            closest_minute = min(minutes, key=lambda x: abs(x - future_time.minute))
+            return closest_minute
+
         if pomTimeConfig == PomTimeType.POM_TIME_TYPE_DEFAULT_25:
             self.pomDurationInMin = 25
             self.pomBreakTimeInMin = 5
-            if (
-                datetime.datetime.now().minute % self.pomDurationInMin
-            ) <= self.pomBreakTimeInMin:
-                if datetime.datetime.now().minute > 31:
-                    self.pomStartMin = 0
-                    self.pomEndMin = 111
-                else:
-                    self.pomStartMin = 30
-                    self.pomEndMin = 111
-            else:
-                if datetime.datetime.now().minute > 31:
-                    self.pomStartMin = 111
-                    self.pomEndMin = 55
-                else:
-                    self.pomStartMin = 111
-                    self.pomEndMin = 25
-        elif pomTimeConfig == PomTimeType.POM_TIME_TYPE_DEFAULT_50:
-            self.pomDurationInMin = 50
-            self.pomBreakTimeInMin = 10
-            if datetime.datetime.now().minute > 50:
-                self.pomStartMin = 0
+            closest_minute = _closest_minute_in_future([0, 25, 30, 55])
+            if closest_minute == 0 or 30:
+                self.pomStartMin = closest_minute
                 self.pomEndMin = 111
             else:
                 self.pomStartMin = 111
-                self.pomEndMin = 50
+                self.pomEndMin = closest_minute
+        elif pomTimeConfig == PomTimeType.POM_TIME_TYPE_DEFAULT_50:
+            self.pomDurationInMin = 50
+            self.pomBreakTimeInMin = 10
+            closest_minute = _closest_minute_in_future([0, 50])
+            if closest_minute == 0:
+                self.pomStartMin = closest_minute
+                self.pomEndMin = 111
+            else:
+                self.pomStartMin = 111
+                self.pomEndMin = closest_minute
+        else:
+            print('pom times should be set in pomBot constructor')
 
-    def _get_project_jobs(self, config: Config):
-        jobs_config = config.jobsConfig
-        if jobs_config.sendMessagesJobActivated == True:
-            send_message_job = SendMessageJob(
-                self.channel_string,
-                self.pomStartMin,
-                self.pomEndMin,
-                self.pomDurationInMin,
-                self.pomBreakTimeInMin,
-                config
-            )
-            self.jobs.append(send_message_job)
-        if jobs_config.reactEmojisJobActivated == True:
-            react_emoji_job = ReactEmojiJob(
-                self.channel_string,
-                self.pomStartMin,
-                self.pomEndMin,
-                self.pomDurationInMin,
-                self.pomBreakTimeInMin,
-                config
-            )
-            self.jobs.append(react_emoji_job)
 
-    def start(self):
-        for job in self.jobs:
-            try:
-                job.start_cycle()
-            except Exception as e:
-                print("exception has occured")
-                job.stop_cycle()
+    def start_cycle(self):
+        self._cycle_thread = threading.Thread(target=self._cycle)
+        self.stop = False
+        self._cycle_thread.start()
+
+    def stop_cycle(self):
+        self.stop = True
+        self._cycle_thread.join()
+
+    def _cycle(self):
+        print("start cycle for send job")
+        while not self.stop:
+            if datetime.datetime.now().minute == self.pomEndMin:
+                self._execute_start_messages()
+                time.sleep(
+                    (self.pomDurationInMin * 60) - (datetime.datetime.now().second)
+                )
+                self.pomStartMin = datetime.datetime.now().minute
+                self.pomEndMin = 999
+            if datetime.datetime.now().minute == self.pomStartMin:
+                self._execute_end_messages()
+                time.sleep(
+                    (self.pomBreakTimeInMin * 60) - (datetime.datetime.now().second)
+                )
+                self.pomStartMin = datetime.datetime.now().minute
+            time.sleep(1)
+
+    def _execute_start_messages(self):
+        if self.config.jobsConfig.sendMessagesJobActivated == True:
+            SendMessage.sendMessage(
+                self.channel_string, self.config.messagesConfig.pomStartMessage
+            )
+        time.sleep(1)
+        id = ReceiveMessage().get_message_ids_with_searched_message(self.channel_string, self.config.messagesConfig.pomStartMessage)[0]
+        if self.config.jobsConfig.reactEmojisJobActivated == True:
+            ReactWithEmoji.react_with_emojis(
+                id,
+                self.channel_string,
+                self.config.reactEmojisConfig.pomStartReactEmojis,
+            )
+        if self.config.jobsConfig.markOwnMessageUnreadActivated == True:
+            MarkMessageUnread.markMessageUnread(self.channel_string, id)
+
+    def _execute_end_messages(self):
+        if self.config.jobsConfig.sendMessagesJobActivated == True:
+            SendMessage.sendMessage(
+                self.channel_string, self.config.messagesConfig.pomStartMessage
+            )
+        time.sleep(1)
+        id = ReceiveMessage().get_message_ids_with_searched_message(self.channel_string, self.config.messagesConfig.pomEndMessage)[0]
+        if self.config.jobsConfig.reactEmojisJobActivated == True:
+            ReactWithEmoji.react_with_emojis(
+                id, self.channel_string, self.config.reactEmojisConfig.pomEndReactEmojis
+            )
+        if self.config.jobsConfig.markOwnMessageUnreadActivated == True:
+            MarkMessageUnread.markMessageUnread(self.channel_string, id)

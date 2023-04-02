@@ -6,6 +6,7 @@ class ExtendedEnum(Enum):
     def list(cls):
         return list(map(lambda c: c.value, cls))
 
+
 class ReactEmojisSparkles(ExtendedEnum):
     REACT_EMOJI_KAWAII_SPARKLE = (
         "/reactions/kawaiiSparkles%3A737449279869681674/%40me?location=Message"

@@ -1,6 +1,7 @@
 from dataclasses import dataclass
-from Enums.pomBotEnums import  ExtendedEnum
+from Enums.pomBotEnums import ExtendedEnum
 import abc
+
 
 class PomTimeType(ExtendedEnum):
     POM_TIME_TYPE_DEFAULT_25 = (0,)
@@ -13,17 +14,18 @@ class MessagesConfig:
     pomStartMessage: str
     pomEndMessage: str
 
+
 @dataclass
 class ReactEmojisConfig:
     pomStartReactEmojis: ExtendedEnum
     pomEndReactEmojis: ExtendedEnum
+
 
 @dataclass
 class JobsConfig:
     sendMessagesJobActivated: bool
     reactEmojisJobActivated: bool
     markOwnMessageUnreadActivated: bool
-
 
 
 @dataclass

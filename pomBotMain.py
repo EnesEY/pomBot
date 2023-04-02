@@ -1,8 +1,14 @@
-from config.config import Config, MessagesConfig, JobsConfig, PomTimeType, ReactEmojisConfig
+from config.config import (
+    Config,
+    MessagesConfig,
+    JobsConfig,
+    PomTimeType,
+    ReactEmojisConfig,
+)
 from Enums.pomBotEnums import ReactEmojisSparkles, ReactEmojisNumbers
 from source.pomBot import PomBot
 from project_secrets import token_secret
-
+from source.receiveMessage import ReceiveMessage
 
 my_config = Config(
     messagesConfig=MessagesConfig(
@@ -11,28 +17,31 @@ my_config = Config(
     ),
     jobsConfig=JobsConfig(
         sendMessagesJobActivated=True,
-        reactEmojisJobActivated=False,
-        markOwnMessageUnreadActivated=False,
+        reactEmojisJobActivated=True,
+        markOwnMessageUnreadActivated=True,
     ),
-    reactEmojisConfig=ReactEmojisConfig(
-        pomStartReactEmojis=ReactEmojisSparkles,
-        pomEndReactEmojis=ReactEmojisNumbers
-    )
+    reactEmojisConfig=ReactEmojisConfig(  # only used if reactEmojisJobActivated == True
+        pomStartReactEmojis=ReactEmojisSparkles, pomEndReactEmojis=ReactEmojisNumbers
+    ),
 )
+
 
 def main():
     pomBot = PomBot(
         channel_id=1091469223009726575,
         secret_token=token_secret,
-        pomTimeConfig=PomTimeType.POM_TIME_TYPE_DEFAULT_25,
+        pomTimeConfig=PomTimeType.POM_TIME_TYPE_CUSTOM,
         config=my_config,
         # only needed if pomTimeConfig=PomTimeType.POM_TIME_TYPE_CUSTOM
-        # pomStartMin=19,
-        # pomEndMin=111,
-        # pomDurationInMin=2,
-        # pomBreakTimeInMin=1,
+        pomStartMin=4,
+        pomEndMin=111,
+        pomDurationInMin=2,
+        pomBreakTimeInMin=1,
     )
-    pomBot.start()
+    try:
+        pomBot.start_cycle()
+    except:
+        print('something went wrong')
 
 
 if __name__ == "__main__":
