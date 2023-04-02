@@ -8,7 +8,9 @@ from config.config import (
 from Enums.pomBotEnums import ReactEmojisSparkles, ReactEmojisNumbers
 from source.pomBot import PomBot
 from project_secrets import token_secret
-from source.receiveMessage import ReceiveMessage
+import datetime
+
+# documentation https://discord.com/developers/docs/resources/channel#get-channel-messages
 
 my_config = Config(
     messagesConfig=MessagesConfig(
@@ -18,8 +20,8 @@ my_config = Config(
     jobsConfig=JobsConfig(
         sendMessagesJobActivated=True,
         reactEmojisJobActivated=True,
-        markOwnMessageUnreadActivated=True,
-        checkAfksJobActivated=False, # not implemented
+        markOwnMessageUnreadActivated=False,
+        checkAfksJobActivated=False,  # not implemented
     ),
     reactEmojisConfig=ReactEmojisConfig(  # only used if reactEmojisJobActivated == True
         pomStartReactEmojis=ReactEmojisSparkles, pomEndReactEmojis=ReactEmojisNumbers
@@ -31,11 +33,11 @@ def main():
     pomBot = PomBot(
         channel_id=1091469223009726575,
         secret_token=token_secret,
-        pomTimeConfig=PomTimeType.POM_TIME_TYPE_CUSTOM,
+        pomTimeConfig=PomTimeType.POM_TIME_TYPE_DEFAULT_25, # POM_TIME_TYPE_DEFAULT_25 , POM_TIME_TYPE_DEFAULT_50, POM_TIME_TYPE_CUSTOM
         config=my_config,
         # only relevant if pomTimeConfig=PomTimeType.POM_TIME_TYPE_CUSTOM
         pomStartMin=111,
-        pomEndMin=29,
+        pomEndMin=datetime.datetime.now().minute,
         pomDurationInMin=2,
         pomBreakTimeInMin=1,
     )

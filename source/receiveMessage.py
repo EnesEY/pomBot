@@ -34,7 +34,7 @@ class ReceiveMessage:
         self,
         channelID: str,
         searched_message: str,
-        limit: int = 5,
+        limit: int = 100,
     ):
         messages_with_limit = self.__retrieveAllMessages(channelID, limit)
         json_data = json.loads(messages_with_limit.text)
@@ -62,11 +62,9 @@ class ReceiveMessage:
                 user_message_list, maxSecondsOld
             )
         return [message["id"] for message in user_message_list]
-    
-    def get_messages_of_age(self, channelID:str, maxSecondsOld:int, limit:int=100):
+
+    def get_messages_of_age(self, channelID: str, maxSecondsOld: int, limit: int = 100):
         messages_with_limit = self.__retrieveAllMessages(channelID, limit)
         json_data = json.loads(messages_with_limit.text)
-        messages_of_age = self.__filterMessageListForAge(
-            json_data, maxSecondsOld
-        )
+        messages_of_age = self.__filterMessageListForAge(json_data, maxSecondsOld)
         return messages_of_age
