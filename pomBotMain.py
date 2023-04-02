@@ -33,7 +33,7 @@ def main():
     pomBot = PomBot(
         channel_id=1091469223009726575,
         secret_token=token_secret,
-        pomTimeConfig=PomTimeType.POM_TIME_TYPE_DEFAULT_50, # POM_TIME_TYPE_DEFAULT_25 , POM_TIME_TYPE_DEFAULT_50, POM_TIME_TYPE_CUSTOM
+        pomTimeConfig=PomTimeType.POM_TIME_TYPE_DEFAULT_50,  # POM_TIME_TYPE_DEFAULT_25 , POM_TIME_TYPE_DEFAULT_50, POM_TIME_TYPE_CUSTOM
         config=my_config,
         # only relevant if pomTimeConfig=PomTimeType.POM_TIME_TYPE_CUSTOM
         pomStartMin=111,

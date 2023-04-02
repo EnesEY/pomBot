@@ -68,3 +68,12 @@ class ReceiveMessage:
         json_data = json.loads(messages_with_limit.text)
         messages_of_age = self.__filterMessageListForAge(json_data, maxSecondsOld)
         return messages_of_age
+
+    def getRecipients(
+        self, channelID: str
+    ):  # endpoint does not work, only works for bots
+        header = {"authorization": token_secret}
+        channelID = channelID + "/recipients"
+        response = requests.get(channelID, headers=header)
+        json_data = json.loads(response.text)
+        return json_data
