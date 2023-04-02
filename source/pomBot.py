@@ -46,16 +46,17 @@ class PomBot:
 
     def _load_pom_times(self, pomTimeConfig: PomTimeType):
         def _closest_minute_in_future(minutes):
-            now = datetime.datetime.now()
-            future_time = now + datetime.timedelta(minutes=1)
-            closest_minute = min(minutes, key=lambda x: abs(x - future_time.minute))
+            now = datetime.datetime.now().minute
+            time_differences = [abs(curr_time - now) for curr_time in minutes]
+            min_time_difference = min(time_differences)
+            closest_minute = minutes[time_differences.index(min_time_difference)]
             return closest_minute
 
         if pomTimeConfig == PomTimeType.POM_TIME_TYPE_DEFAULT_25:
             self.pomDurationInMin = 25
             self.pomBreakTimeInMin = 5
             closest_minute = _closest_minute_in_future([0, 25, 30, 55])
-            if closest_minute == 0 or 30:
+            if closest_minute == 0 or closest_minute == 30:
                 self.pomStartMin = closest_minute
                 self.pomEndMin = 111
             else:
@@ -89,16 +90,17 @@ class PomBot:
             if datetime.datetime.now().minute == self.pomEndMin:
                 self._execute_end_messages()
                 time.sleep(
-                    (self.pomDurationInMin * 60) - (datetime.datetime.now().second)
+                    (self.pomBreakTimeInMin * 60) - (datetime.datetime.now().second)
                 )
                 self.pomStartMin = datetime.datetime.now().minute
                 self.pomEndMin = 999
             if datetime.datetime.now().minute == self.pomStartMin:
                 self._execute_start_messages()
                 time.sleep(
-                    (self.pomBreakTimeInMin * 60) - (datetime.datetime.now().second)
+                    (self.pomDurationInMin * 60) - (datetime.datetime.now().second)
                 )
-                self.pomStartMin = datetime.datetime.now().minute
+                self.pomEndMin = datetime.datetime.now().minute
+                self.pomStartMin = 999
             time.sleep(1)
 
     def _execute_start_messages(self):
