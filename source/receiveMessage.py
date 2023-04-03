@@ -73,7 +73,8 @@ class ReceiveMessage:
         self, channelID: str
     ):  # endpoint does not work, only works for bots
         header = {"authorization": token_secret}
-        channelID = channelID + "/recipients"
+        channelID = channelID.replace("/messages", "")
         response = requests.get(channelID, headers=header)
         json_data = json.loads(response.text)
-        return json_data
+        recipients = [recipient["username"] for recipient in json_data["recipients"]]
+        return recipients

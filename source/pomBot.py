@@ -120,6 +120,8 @@ class PomBot:
             )
         if self.config.jobsConfig.markOwnMessageUnreadActivated == True:
             MarkMessageUnread.markMessageUnread(self.channel_string, id)
+        if self.config.jobsConfig.checkAfksJobActivated == True:
+            CheckAfks.check_afks(self.channel_string, 7200)
 
     def _execute_end_messages(self):
         if self.config.jobsConfig.sendMessagesJobActivated == True:
