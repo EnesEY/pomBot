@@ -19,8 +19,8 @@ my_config = Config(
     ),
     jobsConfig=JobsConfig(
         sendMessagesJobActivated=True,
-        reactEmojisJobActivated=False,
-        markOwnMessageUnreadActivated=False,
+        reactEmojisJobActivated=True,
+        markOwnMessageUnreadActivated=True,
         checkAfksJobActivated=True,
     ),
     reactEmojisConfig=ReactEmojisConfig(  # only used if reactEmojisJobActivated == True
@@ -31,9 +31,9 @@ my_config = Config(
 
 def main():
     pomBot = PomBot(
-        channel_id=1092279845108596866,
+        channel_id=1084544283786350624,
         secret_token=token_secret,
-        pomTimeConfig=PomTimeType.POM_TIME_TYPE_CUSTOM,  # POM_TIME_TYPE_DEFAULT_25 , POM_TIME_TYPE_DEFAULT_50, POM_TIME_TYPE_CUSTOM
+        pomTimeConfig=PomTimeType.POM_TIME_TYPE_DEFAULT_25,  # POM_TIME_TYPE_DEFAULT_25 , POM_TIME_TYPE_DEFAULT_50, POM_TIME_TYPE_CUSTOM
         config=my_config,
         # only relevant if pomTimeConfig=PomTimeType.POM_TIME_TYPE_CUSTOM
         pomStartMin=111,

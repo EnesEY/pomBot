@@ -47,7 +47,8 @@ class PomBot:
     def _load_pom_times(self, pomTimeConfig: PomTimeType):
         def _closest_minute_in_future(minutes):
             now = datetime.datetime.now().minute
-            time_differences = [abs(curr_time - now) for curr_time in minutes]
+            future_minutes = [x for x in minutes if x >= now]
+            time_differences = [abs(curr_time - now) for curr_time in future_minutes]
             min_time_difference = min(time_differences)
             closest_minute = minutes[time_differences.index(min_time_difference)]
             return closest_minute
@@ -55,9 +56,12 @@ class PomBot:
         if pomTimeConfig == PomTimeType.POM_TIME_TYPE_DEFAULT_25:
             self.pomDurationInMin = 25
             self.pomBreakTimeInMin = 5
-            closest_minute = _closest_minute_in_future([0, 25, 30, 55])
-            if closest_minute == 0 or closest_minute == 30:
-                self.pomStartMin = closest_minute
+            closest_minute = _closest_minute_in_future([25, 30, 55, 60])
+            if closest_minute == 60:
+                self.pomStartMin = 0
+                self.pomEndMin = 111
+            elif closest_minute == 30:
+                self.pomStartMin = 30
                 self.pomEndMin = 111
             else:
                 self.pomStartMin = 111
@@ -65,13 +69,13 @@ class PomBot:
         elif pomTimeConfig == PomTimeType.POM_TIME_TYPE_DEFAULT_50:
             self.pomDurationInMin = 50
             self.pomBreakTimeInMin = 10
-            closest_minute = _closest_minute_in_future([0, 50])
-            if closest_minute == 0:
-                self.pomStartMin = closest_minute
+            closest_minute = _closest_minute_in_future([50, 60])
+            if closest_minute == 60:
+                self.pomStartMin = 0
                 self.pomEndMin = 111
             else:
                 self.pomStartMin = 111
-                self.pomEndMin = closest_minute
+                self.pomEndMin = 50
         else:
             print("pom times should be set in pomBot constructor")
 
