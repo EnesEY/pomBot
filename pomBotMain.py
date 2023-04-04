@@ -4,6 +4,7 @@ from config.config import (
     JobsConfig,
     PomTimeType,
     ReactEmojisConfig,
+    AfkCheckConfig,
 )
 from Enums.pomBotEnums import ReactEmojisSparkles, ReactEmojisNumbers
 from source.pomBot import PomBot
@@ -19,21 +20,23 @@ my_config = Config(
     ),
     jobsConfig=JobsConfig(
         sendMessagesJobActivated=True,
-        reactEmojisJobActivated=True,
-        markOwnMessageUnreadActivated=True,
+        reactEmojisJobActivated=False,
+        markOwnMessageUnreadActivated=False,
         checkAfksJobActivated=True,
     ),
-    reactEmojisConfig=ReactEmojisConfig(  # only used if reactEmojisJobActivated == True
+    reactEmojisConfig=ReactEmojisConfig(
         pomStartReactEmojis=ReactEmojisSparkles, pomEndReactEmojis=ReactEmojisNumbers
     ),
+    afkCheckConfig=AfkCheckConfig(maxSecondsOld=7200),  # 2h
 )
 
 
 def main():
     pomBot = PomBot(
-        channel_id=1084544283786350624,
+        channel_id=1092387315873239100,
         secret_token=token_secret,
-        pomTimeConfig=PomTimeType.POM_TIME_TYPE_DEFAULT_25,  # POM_TIME_TYPE_DEFAULT_25 , POM_TIME_TYPE_DEFAULT_50, POM_TIME_TYPE_CUSTOM
+        # possible options: # POM_TIME_TYPE_DEFAULT_25 , POM_TIME_TYPE_DEFAULT_50, POM_TIME_TYPE_CUSTOM
+        pomTimeConfig=PomTimeType.POM_TIME_TYPE_DEFAULT_25,
         config=my_config,
         # only relevant if pomTimeConfig=PomTimeType.POM_TIME_TYPE_CUSTOM
         pomStartMin=111,

@@ -22,6 +22,11 @@ class ReactEmojisConfig:
 
 
 @dataclass
+class AfkCheckConfig:
+    maxSecondsOld: int
+
+
+@dataclass
 class JobsConfig:
     sendMessagesJobActivated: bool
     reactEmojisJobActivated: bool
@@ -34,3 +39,4 @@ class Config:
     messagesConfig: MessagesConfig
     jobsConfig: JobsConfig
     reactEmojisConfig: ReactEmojisConfig
+    afkCheckConfig: AfkCheckConfig

@@ -15,4 +15,5 @@ class CheckAfks:
         info_str = ""
         for name in missing_names:
             info_str += name + " "
-        SendMessage.sendMessage(channelID, f"users: {info_str}did not write any message in the last {maxSecondsOld}seconds")
+        if info_str != "":
+            SendMessage.sendMessage(channelID, f"users: {info_str}seem to be afk")

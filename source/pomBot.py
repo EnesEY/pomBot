@@ -50,7 +50,7 @@ class PomBot:
             future_minutes = [x for x in minutes if x >= now]
             time_differences = [abs(curr_time - now) for curr_time in future_minutes]
             min_time_difference = min(time_differences)
-            closest_minute = minutes[time_differences.index(min_time_difference)]
+            closest_minute = future_minutes[time_differences.index(min_time_difference)]
             return closest_minute
 
         if pomTimeConfig == PomTimeType.POM_TIME_TYPE_DEFAULT_25:
@@ -78,6 +78,7 @@ class PomBot:
                 self.pomEndMin = 50
         else:
             print("pom times should be set in pomBot constructor")
+        print(f"pomstartmin: {self.pomStartMin}, pomEndMin: {self.pomEndMin}")
 
     def start_cycle(self):
         self._cycle_thread = threading.Thread(target=self._cycle)
@@ -125,7 +126,9 @@ class PomBot:
         if self.config.jobsConfig.markOwnMessageUnreadActivated == True:
             MarkMessageUnread.markMessageUnread(self.channel_string, id)
         if self.config.jobsConfig.checkAfksJobActivated == True:
-            CheckAfks.check_afks(self.channel_string, 7200)
+            CheckAfks.check_afks(
+                self.channel_string, self.config.afkCheckConfig.maxSecondsOld
+            )
 
     def _execute_end_messages(self):
         if self.config.jobsConfig.sendMessagesJobActivated == True:
@@ -143,4 +146,6 @@ class PomBot:
         if self.config.jobsConfig.markOwnMessageUnreadActivated == True:
             MarkMessageUnread.markMessageUnread(self.channel_string, id)
         if self.config.jobsConfig.checkAfksJobActivated == True:
-            CheckAfks.check_afks(self.channel_string, 7200)
+            CheckAfks.check_afks(
+                self.channel_string, self.config.afkCheckConfig.maxSecondsOld
+            )
