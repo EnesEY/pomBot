@@ -78,3 +78,30 @@ class ReceiveMessage:
         json_data = json.loads(response.text)
         recipients = [recipient["username"] for recipient in json_data["recipients"]]
         return recipients
+
+
+    def getAllMessagesInTimeframe(self, channelID: str, maxSecondsOld: int):
+        def _is_last_message_older_than(lastMessage, maxSecondsOld):
+            timestamp_1 = parse(lastMessage["timestamp"]).timestamp()
+            timestamp_2 = datetime.now().timestamp()
+            t_diff = timestamp_2 - timestamp_1
+            if t_diff > maxSecondsOld:
+                return True
+            return False
+
+        output_messages = []
+        header = {"authorization": token_secret}
+        response = self.__retrieveAllMessages(channelID, 100)
+        output_messages = json.loads(response.text)
+        # check if msg at index 100 is older than max_seconds_old
+        isOlder = _is_last_message_older_than(output_messages[-1], maxSecondsOld)
+        while isOlder != True:
+            messageID = output_messages[-1]["id"]
+            channelID = channelID + "?before=" + messageID
+            response = requests.get(channelID, headers=header)
+            json_data = json.loads(response.text)
+            isOlder = _is_last_message_older_than(json_data[-1], maxSecondsOld)
+            output_messages += json_data
+        messages_of_age = self.__filterMessageListForAge(output_messages, maxSecondsOld)
+        return messages_of_age
+

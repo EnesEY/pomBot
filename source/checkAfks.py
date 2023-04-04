@@ -5,7 +5,7 @@ from source.sendMessage import SendMessage
 class CheckAfks:
     @staticmethod
     def check_afks(channelID, maxSecondsOld):
-        messages = ReceiveMessage().get_messages_of_age(channelID, maxSecondsOld)
+        messages = ReceiveMessage().getAllMessagesInTimeframe(channelID, maxSecondsOld)
         usernames_in_messages = [
             username["author"]["username"] for username in messages
         ]
@@ -15,4 +15,4 @@ class CheckAfks:
         info_str = ""
         for name in missing_names:
             info_str += name + " "
-        SendMessage.sendMessage(channelID, f"users: {info_str}might be afk")
+        SendMessage.sendMessage(channelID, f"users: {info_str}did not write any message in the last {maxSecondsOld}seconds")
