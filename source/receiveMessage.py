@@ -5,7 +5,6 @@ from datetime import datetime
 from dateutil.parser import parse
 from project_secrets import token_secret
 
-
 class ReceiveMessage:
     def __retrieveAllMessages(self, channelID: str, limit: int):
         header = {"authorization": token_secret}
@@ -45,7 +44,7 @@ class ReceiveMessage:
         return messages_with_searched_payload
 
     def get_message_ids_with_username(
-        self,
+        self,   
         channelID: str,
         userName: str,
         maxSecondsOld: int = None,
@@ -97,9 +96,10 @@ class ReceiveMessage:
             return output_messages
 
         # check if msg at index 100 is older than max_seconds_old
+        channel_id_url = channelID
         while _get_message_age(output_messages[-1]) < maxSecondsOld:
             messageID = output_messages[-1]["id"]
-            channelID = channelID + "?before=" + messageID
+            channelID = channel_id_url + "?before=" + messageID
             response = requests.get(channelID, headers=header)
             json_data = json.loads(response.text)
             output_messages += json_data

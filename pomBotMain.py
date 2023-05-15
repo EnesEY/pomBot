@@ -27,13 +27,13 @@ my_config = Config(
     reactEmojisConfig=ReactEmojisConfig(
         pomStartReactEmojis=ReactEmojisSparkles, pomEndReactEmojis=ReactEmojisNumbers
     ),
-    afkCheckConfig=AfkCheckConfig(maxSecondsOld=7200),  # 2h
+    afkCheckConfig=AfkCheckConfig(maxSecondsOld=5400),  # 2h 5400
 )
 
 
 def main():
     pomBot = PomBot(
-        channel_id=1092387315873239100,
+        channel_id=1107524543242842143,
         secret_token=token_secret,
         # possible options: # POM_TIME_TYPE_DEFAULT_25 , POM_TIME_TYPE_DEFAULT_50, POM_TIME_TYPE_CUSTOM
         pomTimeConfig=PomTimeType.POM_TIME_TYPE_DEFAULT_25,
