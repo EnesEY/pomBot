@@ -33,7 +33,7 @@ my_config = Config(
 
 def main():
     pomBot = PomBot(
-        channel_id=1107524543242842143,
+        channel_id=1012619084749344849,
         secret_token=token_secret,
         # possible options: # POM_TIME_TYPE_DEFAULT_25 , POM_TIME_TYPE_DEFAULT_50, POM_TIME_TYPE_CUSTOM
         pomTimeConfig=PomTimeType.POM_TIME_TYPE_DEFAULT_25,
@@ -48,6 +48,7 @@ def main():
         pomBot.start_cycle()
     except:
         print("something went wrong")
+
 
 
 if __name__ == "__main__":

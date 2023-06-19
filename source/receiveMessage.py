@@ -75,7 +75,14 @@ class ReceiveMessage:
         channelID = channelID.replace("/messages", "")
         response = requests.get(channelID, headers=header)
         json_data = json.loads(response.text)
-        recipients = [recipient["username"] for recipient in json_data["recipients"]]
+        usernames = [recipient["username"] for recipient in json_data["recipients"]]
+        display_names = [recipient["display_name"] for recipient in json_data["recipients"]]
+        recipients = []
+        for i in range(0, len(display_names)):
+            if display_names[i] is None:
+                recipients.append(usernames[i])
+            else:
+                recipients.append(display_names[i])
         return recipients
 
     def getAllMessagesInTimeframe(self, channelID: str, maxSecondsOld: int):
