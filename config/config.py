@@ -32,7 +32,7 @@ class JobsConfig:
     reactEmojisJobActivated: bool
     markOwnMessageUnreadActivated: bool
     checkAfksJobActivated: bool
-
+    dadJokeJobActivated: bool
 
 @dataclass
 class Config:

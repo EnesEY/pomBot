@@ -4,6 +4,7 @@ from source.reactWithEmoji import ReactWithEmoji
 from source.receiveMessage import ReceiveMessage
 from source.markMessageUnread import MarkMessageUnread
 from source.checkAfks import CheckAfks
+from source.dadjokes import DadJokesSender
 import datetime
 import threading
 import time
@@ -129,6 +130,8 @@ class PomBot:
         #     CheckAfks.check_afks(
         #         self.channel_string, self.config.afkCheckConfig.maxSecondsOld
         #     )
+        if self.config.jobsConfig.dadJokeJobActivated == True:
+            DadJokesSender.send_dad_joke(self.channel_string)
 
     def _execute_end_messages(self):
         if self.config.jobsConfig.sendMessagesJobActivated == True:
@@ -149,3 +152,5 @@ class PomBot:
             CheckAfks.check_afks(
                 self.channel_string, self.config.afkCheckConfig.maxSecondsOld
             )
+        if self.config.jobsConfig.dadJokeJobActivated == True:
+            DadJokesSender.send_dad_joke(self.channel_string)

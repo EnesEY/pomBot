@@ -23,6 +23,7 @@ my_config = Config(
         reactEmojisJobActivated=False,
         markOwnMessageUnreadActivated=False,
         checkAfksJobActivated=True,
+        dadJokeJobActivated=True,
     ),
     reactEmojisConfig=ReactEmojisConfig(
         pomStartReactEmojis=ReactEmojisSparkles, pomEndReactEmojis=ReactEmojisNumbers
@@ -33,10 +34,10 @@ my_config = Config(
 
 def main():
     pomBot = PomBot(
-        channel_id=1012619084749344849,
+        channel_id=1126237411307958382,
         secret_token=token_secret,
         # possible options: # POM_TIME_TYPE_DEFAULT_25 , POM_TIME_TYPE_DEFAULT_50, POM_TIME_TYPE_CUSTOM
-        pomTimeConfig=PomTimeType.POM_TIME_TYPE_DEFAULT_25,
+        pomTimeConfig=PomTimeType.POM_TIME_TYPE_CUSTOM,
         config=my_config,
         # only relevant if pomTimeConfig=PomTimeType.POM_TIME_TYPE_CUSTOM
         pomStartMin=111,
