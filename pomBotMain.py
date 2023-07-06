@@ -34,10 +34,10 @@ my_config = Config(
 
 def main():
     pomBot = PomBot(
-        channel_id=1126237411307958382,
+        channel_id=1125347229494947882,
         secret_token=token_secret,
         # possible options: # POM_TIME_TYPE_DEFAULT_25 , POM_TIME_TYPE_DEFAULT_50, POM_TIME_TYPE_CUSTOM
-        pomTimeConfig=PomTimeType.POM_TIME_TYPE_CUSTOM,
+        pomTimeConfig=PomTimeType.POM_TIME_TYPE_DEFAULT_25,
         config=my_config,
         # only relevant if pomTimeConfig=PomTimeType.POM_TIME_TYPE_CUSTOM
         pomStartMin=111,
