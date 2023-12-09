@@ -5,6 +5,7 @@ from project_secrets import token_secret
 import datetime
 import logging
 from logging import Logger
+from source.messages import Messages
 
 # documentation https://discord.com/developers/docs/resources/channel#get-channel-messages
 # help for setup in readme.md
@@ -12,8 +13,8 @@ from logging import Logger
 my_config = Config(
     messagesConfig=MessagesConfig(
         sendMessagesJobActivated=True,
-        pomStartMessage="@here <a:echat_sparkles:794309945414778881> <:p_letter_p:795783313242980372> <:p_letter_o:795783310608957450> <:p_letter_m:795783310483783691>     <:p_letter_s:795783310206828548> <:p_letter_t:795783310563213363> <:p_letter_a:795783477269233724> <:p_letter_r:795783310630191104> <:p_letter_t:795783310563213363> <a:echat_sparkles:794309945414778881>",
-        pomEndMessage="@here <a:SquirrelRolli:665618752322273280>  <:p_letter_p:795783313242980372> <:p_letter_o:795783310608957450> <:p_letter_m:795783310483783691>     <:p_letter_d:795783310365294682> <:p_letter_o:795783310608957450> <:p_letter_n:795783310315880469> <:p_letter_e:795783310583791677>  <a:SquirrelRolli:665618752322273280>",
+        pomStartMessage=Messages.sparkles_pom_start,
+        pomEndMessage=Messages.dancing_bear_pom_end,
     ),
     reactEmojisConfig=ReactEmojisConfig(
         reactEmojisJobActivated=True,
