@@ -4,7 +4,7 @@ import threading
 import time
 from dadjokes import Dadjoke
 from source.urlFactory import URLFactory
-from requests import Response, get, post, put
+from requests import get, post, put
 from logging import Logger
 import json
 from typing import List

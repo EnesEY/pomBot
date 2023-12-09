@@ -1,5 +1,4 @@
-1. create a project_secrets.py file in the root folder
-2. insert a variable with the name token_secret = "(your secret)" into the project_secrets.py file
-3. you can find your token_secret as described here:
+1. Get your discord secret token as described here
    https://www.youtube.com/watch?v=DArlLAq56Mo or here https://www.androidauthority.com/get-discord-token-3149920/
-4. configure everything in pomBotMain.py my_config
+2. Configure my_config in pomBotMain.py and run the program
+3. Enter your secret token from step 1 when "Enter the secret token" prompt appears on the console

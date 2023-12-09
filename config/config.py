@@ -54,5 +54,5 @@ class Config:
     markOwnMessagesUnreadConfig: MarkOwnMessagesUnreadConfig
     dadJokesConfig: DadJokesConfig
     pomTimeConfig: PomTimeConfig
-    secret_token: str
     channel_id: int
+    secret_token: str = None
