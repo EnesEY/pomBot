@@ -1,5 +1,5 @@
 {
-    "python.formatting.provider": "autopep8",
+    "python.formatting.provider": "none",
     "python.formatting.autopep8Args": [
         "--max-line-length",
         "120",
@@ -9,5 +9,8 @@
         "./source",
         "./tests",
         "./Enums"
-    ]
+    ],
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    }
 }

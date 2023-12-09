@@ -1,85 +1,23 @@
-from config.config import Config, PomTimeType
-from source.sendMessage import SendMessage
-from source.reactWithEmoji import ReactWithEmoji
-from source.receiveMessage import ReceiveMessage
-from source.markMessageUnread import MarkMessageUnread
-from source.checkAfks import CheckAfks
-from source.dadjokes import DadJokesSender
-import datetime
+from config.config import Config
+from datetime import datetime
 import threading
 import time
+from dadjokes import Dadjoke
+from source.urlFactory import URLFactory
+from requests import Response, get, post, put
+from logging import Logger
+import json
+from typing import List
+from dateutil.parser import parse
 
 
 class PomBot:
-    channel_string: str
     config: Config
-    pomStartMin: int
-    pomEndMin: int
-    pomDurationInMin: int
-    pomBreakTimeInMin: int
-    secret_token: str
 
-    def __init__(
-        self,
-        channel_id: int,
-        config: Config,
-        pomTimeConfig: PomTimeType,
-        secret_token: str,
-        pomStartMin=None,
-        pomEndMin=None,
-        pomDurationInMin=None,
-        pomBreakTimeInMin=None,
-    ):
+    def __init__(self, config: Config, logger: Logger):
         self._cycle_thread: threading.Thread = None
-        self.channel_string = self._get_channel_string(channel_id)
-        self.pomStartMin = pomStartMin
-        self.pomEndMin = pomEndMin
-        self.pomDurationInMin = pomDurationInMin
-        self.pomBreakTimeInMin = pomBreakTimeInMin
         self.config = config
-        self.secret_token = secret_token
-        self._load_pom_times(pomTimeConfig)
-
-    def _get_channel_string(self, channel_id: int):
-        channel_string_start = "https://discord.com/api/v9/channels/"
-        channel_string_end = "/messages"
-        return channel_string_start + str(channel_id) + channel_string_end
-
-    def _load_pom_times(self, pomTimeConfig: PomTimeType):
-        def _closest_minute_in_future(minutes):
-            now = datetime.datetime.now().minute
-            future_minutes = [x for x in minutes if x >= now]
-            time_differences = [abs(curr_time - now) for curr_time in future_minutes]
-            min_time_difference = min(time_differences)
-            closest_minute = future_minutes[time_differences.index(min_time_difference)]
-            return closest_minute
-
-        if pomTimeConfig == PomTimeType.POM_TIME_TYPE_DEFAULT_25:
-            self.pomDurationInMin = 25
-            self.pomBreakTimeInMin = 5
-            closest_minute = _closest_minute_in_future([25, 30, 55, 60])
-            if closest_minute == 60:
-                self.pomStartMin = 0
-                self.pomEndMin = 111
-            elif closest_minute == 30:
-                self.pomStartMin = 30
-                self.pomEndMin = 111
-            else:
-                self.pomStartMin = 111
-                self.pomEndMin = closest_minute
-        elif pomTimeConfig == PomTimeType.POM_TIME_TYPE_DEFAULT_50:
-            self.pomDurationInMin = 50
-            self.pomBreakTimeInMin = 10
-            closest_minute = _closest_minute_in_future([50, 60])
-            if closest_minute == 60:
-                self.pomStartMin = 0
-                self.pomEndMin = 111
-            else:
-                self.pomStartMin = 111
-                self.pomEndMin = 50
-        else:
-            print("pom times should be set in pomBot constructor")
-        print(f"pomstartmin: {self.pomStartMin}, pomEndMin: {self.pomEndMin}")
+        self.logger = logger
 
     def start_cycle(self):
         self._cycle_thread = threading.Thread(target=self._cycle)
@@ -91,66 +29,178 @@ class PomBot:
         self._cycle_thread.join()
 
     def _cycle(self):
-        print("start cycle for send job")
+        self.logger.info("Start PomBot")
+        timerConfig = self.config.pomTimeConfig
         while not self.stop:
-            if datetime.datetime.now().minute == self.pomEndMin:
-                self._execute_end_messages()
-                time.sleep(
-                    (self.pomBreakTimeInMin * 60) - (datetime.datetime.now().second)
-                )
-                self.pomStartMin = datetime.datetime.now().minute
-                self.pomEndMin = 999
-            if datetime.datetime.now().minute == self.pomStartMin:
-                self._execute_start_messages()
-                time.sleep(
-                    (self.pomDurationInMin * 60) - (datetime.datetime.now().second)
-                )
-                self.pomEndMin = datetime.datetime.now().minute
-                self.pomStartMin = 999
+            current_minute = datetime.now().minute
+            end_minute = (timerConfig.pom_start_time + timerConfig.pom_duration) % 60
+            self.logger.info(f"current_min: {current_minute} end_min: {end_minute}")
+            if current_minute == timerConfig.pom_start_time:
+                self._execute_pom_start_process()
+            elif current_minute == end_minute:
+                self._execute_pom_end_process()
+            time.sleep(60 * timerConfig.pom_break_duration)
+
+    def _execute_pom_start_process(self):
+        if self.config.messagesConfig.sendMessagesJobActivated == True:
+            self.send_message(self.config.messagesConfig.pomStartMessage)
+            last_sent_message_id = self.get_last_message_id_for_payload(
+                self.config.messagesConfig.pomStartMessage
+            )
+        if self.config.reactEmojisConfig.reactEmojisJobActivated:
+            self.react_with_list_of_emojis(
+                last_sent_message_id, self.config.reactEmojisConfig.pomStartReactEmojis
+            )
+        if self.config.markOwnMessagesUnreadConfig.markOwnMessageUnreadActivated:
+            self.mark_own_message_unread(last_sent_message_id)  ###sssss
+        if self.config.dadJokesConfig.dadJokeJobActivated:
+            dadjoke = Dadjoke()
+            self.send_message(f"|| {dadjoke.joke} ||")
+
+    def _execute_pom_end_process(self):
+        if self.config.messagesConfig.sendMessagesJobActivated:
+            self.send_message(self.config.messagesConfig.pomEndMessage)
+            last_sent_message_id = self.get_last_message_id_for_payload(
+                self.config.messagesConfig.pomEndMessage
+            )
+        if self.config.reactEmojisConfig.reactEmojisJobActivated:
+            self.react_with_list_of_emojis(
+                last_sent_message_id, self.config.reactEmojisConfig.pomEndReactEmojis
+            )
+        if self.config.markOwnMessagesUnreadConfig.markOwnMessageUnreadActivated:
+            self.mark_own_message_unread(last_sent_message_id)
+        if self.config.afkCheckConfig.checkAfksJobActivated:
+            self.check_afks()
+        if self.config.dadJokesConfig.dadJokeJobActivated:
+            dadjoke = Dadjoke()
+            self.send_message(f"|| {dadjoke.joke} ||")
+
+    def send_message(self, message: str):
+        try:
+            payload = {"content": message}
+            header = {"authorization": self.config.secret_token}
+            channel_url = URLFactory.create_message_url(self.config.channel_id)
+            post(channel_url, data=payload, headers=header)
+            self.logger.info(
+                f"Message: {message} sent successfully to channel_id: {self.config.channel_id}"
+            )
+            time.sleep(1)
+        except Exception as ex:
+            self.logger.error(
+                f"Message {message} could not be sent to channel_id: {self.config.channel_id} Exception: {type(ex).__name__}"
+            )
+
+    # searches for the given message in the last 100 messages and returns the message_id of that message
+    # if multiple messages with the same content are found in the last 100 messages the last message_id is returned
+    def get_last_message_id_for_payload(self, message: str) -> int:
+        limit = 100  # max. limit for discord api
+        channel_url = URLFactory.create_message_url(self.config.channel_id)
+        header = {"authorization": self.config.secret_token}
+        payload = {"limit": limit}
+        try:
+            response = get(channel_url, headers=header, params=payload)
+            messages = json.loads(response.text)
+            message_ids_for_payload = [
+                data["id"] for data in messages if data["content"] == message
+            ]
+            last_message_id_for_payload = message_ids_for_payload[0]
+        except Exception as ex:
+            self.logger.error(
+                f"Couldn't get messages from channel_id: {self.config.channel_id} Exception: {type(ex).__name__}"
+            )
+        return last_message_id_for_payload
+
+    def react_with_list_of_emojis(self, message_id: int, emoji_list: List[str]):
+        header = {"authorization": self.config.secret_token}
+        for emoji_string in emoji_list:
+            react_emoji_url = URLFactory.create_react_with_emoji_url(
+                self.config.channel_id, message_id, emoji_string
+            )
+            put(react_emoji_url, headers=header)
+            self.logger.info(
+                f"Reacted with Emoji {emoji_string} on message_id: {message_id}"
+            )
             time.sleep(1)
 
-    def _execute_start_messages(self):
-        if self.config.jobsConfig.sendMessagesJobActivated == True:
-            SendMessage.sendMessage(
-                self.channel_string, self.config.messagesConfig.pomStartMessage
-            )
-        time.sleep(1)
-        id = ReceiveMessage().get_message_ids_with_searched_message(
-            self.channel_string, self.config.messagesConfig.pomStartMessage
-        )[0]
-        if self.config.jobsConfig.reactEmojisJobActivated == True:
-            ReactWithEmoji.react_with_emojis(
-                id,
-                self.channel_string,
-                self.config.reactEmojisConfig.pomStartReactEmojis,
-            )
-        if self.config.jobsConfig.markOwnMessageUnreadActivated == True:
-            MarkMessageUnread.markMessageUnread(self.channel_string, id)
-        # if self.config.jobsConfig.checkAfksJobActivated == True:
-        #     CheckAfks.check_afks(
-        #         self.channel_string, self.config.afkCheckConfig.maxSecondsOld
-        #     )
-        if self.config.jobsConfig.dadJokeJobActivated == True:
-            DadJokesSender.send_dad_joke(self.channel_string)
+    def mark_own_message_unread(self, message_id: int):
+        payload = json.dumps({"manual": True, "mention_count": 1})
+        header = {
+            "authorization": self.config.secret_token,
+            "Content-Type": "application/json",
+        }
+        mark_own_message_unread_url = URLFactory.create_mark_own_message_unread_url(
+            self.config.channel_id, message_id
+        )
+        post(mark_own_message_unread_url, data=payload, headers=header)
+        self.logger.info(f"message {message_id} was marked unread")
 
-    def _execute_end_messages(self):
-        if self.config.jobsConfig.sendMessagesJobActivated == True:
-            SendMessage.sendMessage(
-                self.channel_string, self.config.messagesConfig.pomEndMessage
+    def get_all_messages_in_time_frame(self, time_frame_in_s: int):
+        limit = 100  # max. limit for discord api
+        channel_url = URLFactory.create_message_url(self.config.channel_id)
+        header = {"authorization": self.config.secret_token}
+        payload = {"limit": limit}
+        response = get(channel_url, headers=header, params=payload)
+        messages = json.loads(response.text)
+
+        if len(messages) < limit:
+            current_timestamp = datetime.now().timestamp()
+            messages_in_timeframe = [
+                data
+                for data in messages
+                if (current_timestamp - parse(data["timestamp"]).timestamp())
+                < time_frame_in_s
+            ]
+            return messages_in_timeframe
+
+        while (
+            datetime.now().timestamp() - parse(messages[-1]["timestamp"]).timestamp()
+        ) < time_frame_in_s:
+            last_message_id = messages[-1]["id"]
+            before_message_url = URLFactory.create_before_message_url(
+                self.config.channel_id, last_message_id
             )
-        time.sleep(1)
-        id = ReceiveMessage().get_message_ids_with_searched_message(
-            self.channel_string, self.config.messagesConfig.pomEndMessage
-        )[0]
-        if self.config.jobsConfig.reactEmojisJobActivated == True:
-            ReactWithEmoji.react_with_emojis(
-                id, self.channel_string, self.config.reactEmojisConfig.pomEndReactEmojis
-            )
-        if self.config.jobsConfig.markOwnMessageUnreadActivated == True:
-            MarkMessageUnread.markMessageUnread(self.channel_string, id)
-        if self.config.jobsConfig.checkAfksJobActivated == True:
-            CheckAfks.check_afks(
-                self.channel_string, self.config.afkCheckConfig.maxSecondsOld
-            )
-        if self.config.jobsConfig.dadJokeJobActivated == True:
-            DadJokesSender.send_dad_joke(self.channel_string)
+            response = get(before_message_url, headers=header)
+            json_data = json.loads(response.text)
+            messages += json_data
+            if len(json_data) < limit:
+                break
+        current_timestamp = datetime.now().timestamp()
+        messages_in_timeframe = [
+            data
+            for data in messages
+            if (current_timestamp - parse(data["timestamp"]).timestamp())
+            < time_frame_in_s
+        ]
+        return messages_in_timeframe
+
+    def get_recipients(self):
+        header = {"authorization": self.config.secret_token}
+        recipients_url = URLFactory.create_recipients_url(self.config.channel_id)
+        response = get(recipients_url, headers=header)
+        json_data = json.loads(response.text)
+        usernames = [
+            d.get("global_name") or d.get("username")
+            for d in json_data["recipients"]
+            if "username" in d or "global_name" in d
+        ]
+        return usernames
+
+    # checks which users didn't send messages in time_frame_in_s and sends a warning for those users
+    def check_afks(self):
+        messages = self.get_all_messages_in_time_frame(
+            self.config.afkCheckConfig.maxSecondsOld
+        )
+        authors = [subdict["author"] for subdict in messages]
+        usernames = [
+            d.get("global_name") or d.get("username")
+            for d in authors
+            if "username" in d or "global_name" in d
+        ]
+        unique_usernames = list(set(usernames))
+        recipients = self.get_recipients()
+        missing_usernames = list(set(recipients) - set(unique_usernames))
+        info_str = ""
+        for name in missing_usernames:
+            info_str += name + " "
+        if info_str != "":
+            self.send_message(f"users: {info_str}seem to be afk")
