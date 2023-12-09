@@ -34,7 +34,9 @@ class PomBot:
         while not self.stop:
             current_minute = datetime.now().minute
             end_minute = (timerConfig.pom_start_time + timerConfig.pom_duration) % 60
-            self.logger.info(f"current_min: {current_minute} end_min: {end_minute}")
+            self.logger.info(
+                f"start_min: {timerConfig.pom_start_time} end_min: {end_minute} current_min: {current_minute}"
+            )
             if current_minute == timerConfig.pom_start_time:
                 self._execute_pom_start_process()
             elif current_minute == end_minute:
