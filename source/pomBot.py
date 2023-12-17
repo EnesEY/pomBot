@@ -13,6 +13,8 @@ from dateutil.parser import parse
 
 class PomBot:
     config: Config
+    next_pom_start_min: int
+    next_pom_end_min: int
 
     def __init__(self, config: Config, logger: Logger):
         self._cycle_thread: threading.Thread = None
@@ -31,17 +33,47 @@ class PomBot:
     def _cycle(self):
         self.logger.info("Start PomBot")
         timerConfig = self.config.pomTimeConfig
+        self.next_pom_start_min = timerConfig.pom_start_time
+        self.next_pom_end_min = (
+            timerConfig.pom_start_time + timerConfig.pom_duration
+        ) % 60
+        self.logger.info(
+            f"start_min: {self.next_pom_start_min} end_min: {self.next_pom_end_min}"
+        )
         while not self.stop:
             current_minute = datetime.now().minute
-            end_minute = (timerConfig.pom_start_time + timerConfig.pom_duration) % 60
-            self.logger.info(
-                f"start_min: {timerConfig.pom_start_time} end_min: {end_minute} current_min: {current_minute}"
-            )
-            if current_minute == timerConfig.pom_start_time:
+            if current_minute == self.next_pom_start_min:
                 self._execute_pom_start_process()
-            elif current_minute == end_minute:
+            elif current_minute == self.next_pom_end_min:
                 self._execute_pom_end_process()
-            time.sleep(60 * timerConfig.pom_break_duration)
+            else:
+                self._wait_until_next_minute()
+
+    def _update_start_time(self):
+        timerConfig = self.config.pomTimeConfig
+        self.next_pom_start_min = (
+            self.next_pom_start_min
+            + timerConfig.pom_duration
+            + timerConfig.pom_break_duration
+        ) % 60
+        self.logger.info(
+            f"Next pom start: {self.next_pom_start_min} pom end: {self.next_pom_end_min}"
+        )
+
+    def _update_end_time(self):
+        timerConfig = self.config.pomTimeConfig
+        self.next_pom_end_min = (
+            self.next_pom_end_min
+            + timerConfig.pom_duration
+            + timerConfig.pom_break_duration
+        ) % 60
+        self.logger.info(
+            f"Next pom start: {self.next_pom_start_min} pom end: {self.next_pom_end_min}"
+        )
+
+    def _wait_until_next_minute(self):
+        remaining_seconds = 60 - datetime.now().second
+        time.sleep(remaining_seconds + 1)
 
     def _execute_pom_start_process(self):
         if self.config.messagesConfig.sendMessagesJobActivated == True:
@@ -58,6 +90,8 @@ class PomBot:
         if self.config.dadJokesConfig.dadJokeJobActivated:
             dadjoke = Dadjoke()
             self.send_message(f"|| {dadjoke.joke} ||")
+        self._update_start_time()
+        self._wait_until_next_minute()
 
     def _execute_pom_end_process(self):
         if self.config.messagesConfig.sendMessagesJobActivated:
@@ -76,6 +110,8 @@ class PomBot:
         if self.config.dadJokesConfig.dadJokeJobActivated:
             dadjoke = Dadjoke()
             self.send_message(f"|| {dadjoke.joke} ||")
+        self._update_end_time()
+        self._wait_until_next_minute()
 
     def send_message(self, message: str):
         try:

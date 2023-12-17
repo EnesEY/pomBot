@@ -15,25 +15,25 @@ my_config = Config(
         sendMessagesJobActivated=True,
         pomStartMessage=Messages.sparkles_pom_start,
         pomEndMessage=Messages.dancing_bear_pom_end,
-    ),
+    ),  # pom start and end messages can be configured here
     reactEmojisConfig=ReactEmojisConfig(
-        reactEmojisJobActivated=True,
+        reactEmojisJobActivated=False,
         pomStartReactEmojis=ReactEmojiLists.sparkles,
         pomEndReactEmojis=ReactEmojiLists.numbers,
-    ),
+    ),  # lists with emojis that are reacted on pom start and end messages
     afkCheckConfig=AfkCheckConfig(
         checkAfksJobActivated=True, maxSecondsOld=8000
-    ),  # 2h 5400
+    ),  # if someone didn't send messages for maxSecondsOld they are marked as afk
     markOwnMessagesUnreadConfig=MarkOwnMessagesUnreadConfig(
-        markOwnMessageUnreadActivated=True
+        markOwnMessageUnreadActivated=False
     ),
-    dadJokesConfig=DadJokesConfig(dadJokeJobActivated=True),
+    dadJokesConfig=DadJokesConfig(dadJokeJobActivated=False),  # activates dad jokes
     pomTimeConfig=PomTimeConfig(
         pom_duration=25,
         pom_break_duration=5,
-        # pom_start_time=datetime.datetime.now().minute,
-    ),
-    channel_id=1182833837483511949,
+        pom_start_time=30,
+    ),  # configure pom timer
+    channel_id=1185118271171739709,  # id of the dm-group
 )
 
 
@@ -53,9 +53,12 @@ def get_secret_token(logger: Logger) -> str:
 
 
 def main():
-    logging.basicConfig(level=logging.INFO)
-    logger: Logger = logging.getLogger(__name__)
-    logger.setLevel(logging.DEBUG)
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.INFO)
+    handler = logging.StreamHandler()
+    formatter = logging.Formatter("%(levelname)s %(asctime)s:  %(message)s")
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
     try:
         my_config.secret_token = get_secret_token(logger)
         pomBot = PomBot(my_config, logger)
