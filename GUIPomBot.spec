@@ -3,7 +3,7 @@
 
 a = Analysis(
     ['GUIPomBot.py'],
-    pathex=[],
+    pathex=['pomBot/Lib/site-packages'],
     binaries=[],
     datas=[],
     hiddenimports=[],
