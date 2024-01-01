@@ -86,7 +86,7 @@ class PomBot:
                 last_sent_message_id, self.config.reactEmojisConfig.pomStartReactEmojis
             )
         if self.config.markOwnMessagesUnreadConfig.markOwnMessageUnreadActivated:
-            self.mark_own_message_unread(last_sent_message_id)  ###sssss
+            self.mark_own_message_unread(last_sent_message_id)
         if self.config.dadJokesConfig.dadJokeJobActivated:
             dadjoke = Dadjoke()
             self.send_message(f"|| {dadjoke.joke} ||")

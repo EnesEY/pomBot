@@ -1,3 +1,4 @@
 requests
-black
-logging
+customtkinter
+dadjokes
+python-dateutil

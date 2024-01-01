@@ -33,7 +33,7 @@ my_config = Config(
         pom_break_duration=5,
         pom_start_time=30,
     ),  # configure pom timer
-    channel_id=1185118271171739709,  # id of the dm-group
+    channel_id=1186570188481626162,  # id of the dm-group
 )
 
 
